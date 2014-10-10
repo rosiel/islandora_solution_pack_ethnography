@@ -1,0 +1,9 @@
+name = Islandora Ethnography
+description = Display a linked network of entities and stories.
+dependencies[] = islandora
+dependencies[] = islandora_basic_collection
+dependencies[] = islandora_solr
+dependencies[] = islandora_solr_metadata
+dependencies[] = islandora_entities
+package = Islandora Solution Packs
+core = 7.x
