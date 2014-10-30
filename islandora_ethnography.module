@@ -28,7 +28,7 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
 function islandora_ethnography_islandora_personCmodel_islandora_view_object_alter(&$object, &$rendered) {
   unset($rendered['']);
 
-  return 'foo';
+  return;
 }
 
 /**
@@ -47,3 +47,76 @@ function islandora_ethnography_islandora_organizationCModel_islandora_view_objec
   return array('islandora_ethnography' => $output);
 }
 
+/**
+ * Implements hook_islandora_required_objects().
+ */
+function islandora_ethnography_islandora_required_objects(IslandoraTuque $connection)
+{
+  $module_path = drupal_get_path('module', 'islandora_ethnography');
+
+  // Tune Content Model.
+  $tune_content_model = $connection->repository->constructObject('islandora:BDHTuneCModel');
+  $tune_content_model->owner = 'fedoraAdmin';
+  $tune_content_model->label = 'Islandora Tune Work Content Model';
+  $tune_content_model->models = 'fedora-system:ContentModel-3.0';
+  // DS-COMPOSITE-MODEL Datastream.
+  islandora_ethnography_ingest__ds_composite_datastream($tune_content_model, $module_path . "/xml/islandora_tune_ds_composite_model.xml");
+
+  // Notation Content Model.
+  $notation_content_model = $connection->repository->constructObject('islandora:BDHNotationCModel');
+  $notation_content_model->owner = 'fedoraAdmin';
+  $notation_content_model->label = 'Islandora Music Notation Content Model';
+  $notation_content_model->models = 'fedora-system:ContentModel-3.0';
+  // DS-COMPOSITE-MODEL Datastream.
+  islandora_ethnography_ingest__ds_composite_datastream($notation_content_model, $module_path . "/xml/islandora_notation_ds_composite_model.xml");
+
+  /*
+  // Tune Collection.
+  $entity_collection = $connection->repository->constructObject('islandora:tune_work_collection');
+  $entity_collection->owner = 'fedoraAdmin';
+  $entity_collection->label = 'Tune Collection';
+  $entity_collection->models = 'islandora:collectionCModel';
+  $entity_collection->relationships->add(FEDORA_RELS_EXT_URI, 'isMemberOfCollection', 'islandora:root');
+  // TN Datastream.
+  $thumbnail_datastream = $entity_collection->constructDatastream('TN', 'M');
+  $thumbnail_datastream->label = 'Thumbnail';
+  $thumbnail_datastream->mimetype = 'image/png';
+  $thumbnail_datastream->setContentFromFile("$module_path/images/folder.png", FALSE);
+  $entity_collection->ingestDatastream($thumbnail_datastream);
+  // Collection policy datastream.
+  $collection_policy_datastream = $entity_collection->constructDatastream('COLLECTION_POLICY', 'X');
+  $collection_policy_datastream->label = 'Collection policy';
+  $collection_policy_datastream->mimetype = 'text/xml';
+  $collection_policy_datastream->setContentFromFile("$module_path/xml/islandora_entity_collection_policy.xml", FALSE);
+  $entity_collection->ingestDatastream($collection_policy_datastream);
+  */
+
+  return array(
+    'islandora_ethnography' => array(
+      'title' => 'Islandora ethnography',
+      'objects' => array(
+        $tune_content_model,
+        $notation_content_model,
+      ),
+    ),
+  );
+}
+
+/**
+ * This function will add an entity DS composite datastream to an object.
+ *
+ * This is a workaround of a known issue with temp files being lost in Tuque in
+ * batches because of object destruction during the serialization process.
+ *
+ * @param AbstractObject $islandora_object
+ *   The object to add the DS composite datastream to.
+ */
+function islandora_ethnography_ingest__ds_composite_datastream(AbstractObject $islandora_object, $filename) {
+  $module_path = drupal_get_path('module', 'islandora_ethnography');
+
+  $ds_composite_datastream = $islandora_object->constructDatastream('DS-COMPOSITE-MODEL', 'X');
+  $ds_composite_datastream->label = 'DS-COMPOSITE-MODEL';
+  $ds_composite_datastream->mimetype = 'text/xml';
+  $ds_composite_datastream->setContentFromFile($filename, FALSE);
+  $islandora_object->ingestDatastream($ds_composite_datastream);
+}

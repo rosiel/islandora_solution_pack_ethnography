@@ -149,8 +149,12 @@ function islandora_ethnography_get_dept_members($dept, $pid) {
 /**
  * Implements hook_preprocess().
  */
-function islandora_ethnography_preprocess_islandora_dept(array &$variables) {
+function islandora_ethnography_preprocess_islandora_dept_ethnography(array &$variables) {
   module_load_include('inc', 'islandora', 'includes/metadata');
   $object = $variables['object'];
   $variables['metadata'] = islandora_retrieve_metadata_markup($object, TRUE);
+  if ($object['BIO']) {
+    $bio = $object['BIO']->content;
+    $variables['biography'] = $bio;
+  }
 }
