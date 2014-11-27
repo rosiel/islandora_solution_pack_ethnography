@@ -25,12 +25,19 @@
   </div>
 
 
+
   <div class="islandora-object-content">
     <?php if (isset($variables['biography'])): ?>
-      <h3 class="bio"><?php print t('Biography'); ?></h3>
+      <h3 class="bio"><?php print t('About this tune'); ?></h3>
       <p><?php print $variables['biography']; ?></p>
     <?php endif; ?>
 
+
   </div>
 
+  <?php if (isset($variables['notation'])): ?>
+    <div class="pdfjs"
+    <?php print ($variables['notation']); ?>
+    </div>
+  <?php endif; ?>
 </div>

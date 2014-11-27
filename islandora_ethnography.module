@@ -1,4 +1,11 @@
 <?php
+/**
+ * @file
+ * Islandora module for ethnography with customizations
+ */
+
+define('ISLANDORA_ETHNOGRAPHY_CIDOC', 'http://www.cidoc-crm.org/cidoc-crm/');
+define('ISLANDORA_ETHNOGRAPHY_FRBROO', 'http://iflastandards.info/ns/fr/frbr/frbroo/');
 
 /**
  * @file
@@ -22,13 +29,39 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
       'pattern' => 'islandora_dept__',
       'variables' => array('islandora_object' => NULL),
     ),
+    'islandora_tune_ethnography' => array(
+      'file' => 'theme/theme.inc',
+      'template' => 'theme/islandora-tune',
+      'pattern' => 'islandora_tune__',
+      'variables' => array('islandora_object' => NULL),
+    ),
+    'islandora_notation_ethnography' => array(
+      'file' => 'theme/theme.inc',
+      'template' => 'theme/islandora-notation',
+      'pattern' => 'islandora_notation__',
+      'variables' => array('object' => NULL),
+    ),
+    'islandora_story_ethnography' => array(
+      'file' => 'theme/theme.inc',
+      'template' => 'theme/islandora-story',
+      'pattern' => 'islandora_story__',
+      'variables' => array('object' => NULL),
+    ),
   );
 }
 
-function islandora_ethnography_islandora_personCmodel_islandora_view_object_alter(&$object, &$rendered) {
+/**
+ * Implements hook_CMODEL_PID_islandora_view_object_alter().
+ */
+function islandora_ethnography_islandora_organizationCModel_islandora_view_object_alter(&$object, &$rendered) {
   unset($rendered['']);
+}
 
-  return;
+/**
+ * Implements hook_CMODEL_PID_islandora_view_object_alter().
+ */
+function islandora_ethnography_islandora_personCModel_islandora_view_object_alter(&$object, &$rendered) {
+  unset($rendered['']);
 }
 
 /**
@@ -48,10 +81,32 @@ function islandora_ethnography_islandora_organizationCModel_islandora_view_objec
 }
 
 /**
+ * Implements hook_CMODEL_PID_islandora_view_object().
+ */
+function islandora_ethnography_islandora_BDHTuneCModel_islandora_view_object($object, $page_number, $page_size) {
+  $output = theme('islandora_tune_ethnography', array('object' => $object));
+  return array('' => $output);
+}
+
+/**
+ * Implements hook_CMODEL_PID_islandora_view_object().
+ */
+function islandora_ethnography_islandora_BDHNotationCModel_islandora_view_object($object, $page_number, $page_size) {
+  $output = theme('islandora_notation_ethnography', array('object' => $object));
+  return array('' => $output);
+}
+/**
+ * Implements hook_CMODEL_PID_islandora_view_object().
+ */
+function islandora_ethnography_islandora_storyCModel_islandora_view_object($object, $page_number, $page_size) {
+  $output = theme('islandora_story_ethnography', array('object' => $object));
+  return array('' => $output);
+}
+
+/**
  * Implements hook_islandora_required_objects().
  */
-function islandora_ethnography_islandora_required_objects(IslandoraTuque $connection)
-{
+function islandora_ethnography_islandora_required_objects(IslandoraTuque $connection) {
   $module_path = drupal_get_path('module', 'islandora_ethnography');
 
   // Tune Content Model.
@@ -69,6 +124,15 @@ function islandora_ethnography_islandora_required_objects(IslandoraTuque $connec
   $notation_content_model->models = 'fedora-system:ContentModel-3.0';
   // DS-COMPOSITE-MODEL Datastream.
   islandora_ethnography_ingest__ds_composite_datastream($notation_content_model, $module_path . "/xml/islandora_notation_ds_composite_model.xml");
+  
+  
+  // Story Content Model.
+  $story_content_model = $connection->repository->constructObject('islandora:storyCModel');
+  $story_content_model->owner = 'fedoraAdmin';
+  $story_content_model->label = 'Islandora Story Content Model';
+  $story_content_model->models = 'fedora-system:ContentModel-3.0';
+  // DS-COMPOSITE-MODEL Datastream.
+  islandora_ethnography_ingest__ds_composite_datastream($notation_content_model, $module_path . "/xml/islandora_story_ds_composite_model.xml");
 
   /*
   // Tune Collection.
@@ -97,6 +161,7 @@ function islandora_ethnography_islandora_required_objects(IslandoraTuque $connec
       'objects' => array(
         $tune_content_model,
         $notation_content_model,
+        $story_content_model,
       ),
     ),
   );
@@ -119,4 +184,119 @@ function islandora_ethnography_ingest__ds_composite_datastream(AbstractObject $i
   $ds_composite_datastream->mimetype = 'text/xml';
   $ds_composite_datastream->setContentFromFile($filename, FALSE);
   $islandora_object->ingestDatastream($ds_composite_datastream);
+}
+
+/**
+ * Get local thumbnail.
+ */
+function islandora_ethnography_get_default_thumbnail($cmodel) {
+  $base_path = drupal_get_path('module', 'islandora_ethnography');
+  switch ($cmodel) {
+    case 'islandora:sp_audioCModel':
+      return $base_path . '/images/music-snippet.png';
+
+    case 'islandora:BDHTuneCModel':
+      return $base_path . '/images/music-work.png';
+
+    case 'islandora:BDHNotationCModel':
+      return $base_path . '/images/music-document.png';
+
+    case 'islandora:personCModel':
+      return $base_path . '/images/person.png';
+
+    case 'islandora:organizationCModel':
+      return $base_path . '/images/group.png';
+
+  }
+  return '';
+}
+
+/**
+ * Implements hook_islandora_CMODEL_PID_islandora_solr_object_result_alter().
+ */
+function islandora_ethnography_islandora_sp_audioCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
+  $search_result['thumbnail_url'] = drupal_get_path('module', 'islandora_ethnography') . '/images/music-snippet.png';
+}
+
+/**
+ * Implements hook_islandora_CMODEL_PID_islandora_solr_object_result_alter().
+ */
+function islandora_ethnography_islandora_BDHTuneCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
+  $search_result['thumbnail_url'] = drupal_get_path('module', 'islandora_ethnography') . '/images/music-work.png';
+}
+/**
+ * Implements hook_islandora_CMODEL_PID_islandora_solr_object_result_alter().
+ */
+function islandora_ethnography_islandora_BDHNotationCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
+  $search_result['thumbnail_url'] = drupal_get_path('module', 'islandora_ethnography') . '/images/music-document.png';
+}
+
+/**
+ * Implements hook_islandora_CMODEL_PID_islandora_solr_object_result_alter().
+ */
+function islandora_ethnography_islandora_PersonCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
+  $search_result['thumbnail_url'] = drupal_get_path('module', 'islandora_ethnography') . '/images/person.png';
+}
+
+/**
+ * Implements hook_islandora_CMODEL_PID_islandora_solr_object_result_alter().
+ */
+function islandora_ethnography_islandora_organizationCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
+  $search_result['thumbnail_url'] = drupal_get_path('module', 'islandora_ethnography') . '/images/group.png';
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function islandora_ethnography_block_info() {
+  $blocks['notation_is_expression_of'] = array(
+    'info' => t('Islandora Ethnography Expression Of'),
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => 'islandora/object/*',
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function islandora_ethnography_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'notation_is_expression_of':
+      $block['subject'] = NULL;
+      $block['content'] = islandora_ethnography_notation_block();
+      break;
+  }
+  return $block;
+}
+
+function islandora_ethnography_notation_block() {
+  $block = array();
+  $object = menu_get_object('islandora_object', 2);
+  if ($object) {
+    if (in_array('islandora:BDHNotationCModel', $object->models)) {
+      $block = array();
+      $parents = $object->relationships->get('http://iflastandards.info/ns/fr/frbr/frbroo/', 'R3i_realises');
+      foreach ($parents as $parent) {
+
+        $parent_object = islandora_object_load($parent['object']['value']);
+        $block['#markup'] = t('Is notation for the Tune Work !label', array(
+          '!label' => l($parent_object->label, 'islandora/object/' . $parent_object->id ),
+        ));
+
+      }
+      return $block;
+    }
+
+  }
+
+}
+
+/**
+ * Implements hook_preprocess.
+ */
+function islandora_ethnography_preprocess_islandora_audio(&$variables) {
+
 }

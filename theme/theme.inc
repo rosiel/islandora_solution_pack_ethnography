@@ -22,15 +22,6 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
     $mads = $object['MADS']->content;
     $simplexml = simplexml_load_string($mads);
 
-    # Get Biography from note field FIXME delete this
-    $notes = $simplexml->note;
-    foreach ($notes as $note) {
-      if ($note['type'] == 'history') {
-        $biography = (string) $note;
-        $variables['biography'] = str_replace("\n", "<br />", $biography);
-      }
-    }
-
     if ($object['BIO']) {
       $bio = $object['BIO']->content;
       $variables['biography'] = $bio;
@@ -54,16 +45,7 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
     }
     $depts = $simplexml->affiliation->organization;
     $colleages = array();
-    if ($depts) {
-      foreach ($depts as $dept) {
-        if ((string) $dept) {
-          $members = islandora_ethnography_get_dept_members((string) $dept, $object->id);
-          if ($members) {
-            $colleages[(string) $dept] = $members;
-          }
-        }
-      }
-    }
+
     if (count($colleages) > 0) {
       foreach ($colleages as $dept => $members) {
         foreach ($members as $pid => $scholar) {
@@ -157,4 +139,54 @@ function islandora_ethnography_preprocess_islandora_dept_ethnography(array &$var
     $bio = $object['BIO']->content;
     $variables['biography'] = $bio;
   }
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$variables) {
+  module_load_include('inc', 'islandora_ethnography', 'includes/utilities');
+  module_load_include('inc', 'islandora', 'includes/metadata');
+  module_load_include('inc', 'islandora_entities', 'includes/entities_rss');
+  drupal_add_css(drupal_get_path('module', 'islandora_ethnography') . '/css/islandora-person.css');
+
+  $biography = "";
+  $object = $variables['object'];
+  $object_pid = $object->id;
+
+  $expressions = $object->relationships->get(ISLANDORA_ETHNOGRAPHY_FRBROO, 'R3_is_realised_in');
+  if ($expressions) {
+    $variables['notation'] = array();
+    foreach ($expressions as $expression) {
+      $expression_obj = islandora_object_load($expression['object']['value']);
+      if ($expression_obj) {
+        $variables['notation'][] = theme('islandora_pdfjs_reader', array('fedora_object' => $expression_obj));
+      }
+    }
+    $variables['notation'] = implode(' ', $variables['notation']);
+  }
+
+  $variables['metadata'] = islandora_retrieve_metadata_markup($object, TRUE);
+
+  if ($object['BIO']) {
+    $bio = $object['BIO']->content;
+    $variables['biography'] = $bio;
+  }
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function islandora_ethnography_preprocess_islandora_notation_ethnography(array &$variables) {
+  module_load_include('inc', 'islandora', 'includes/metadata');
+  $variables['metadata'] = islandora_retrieve_metadata_markup($variables['object'], TRUE);
+  $variables['notation'] = theme('islandora_pdfjs_reader', array('fedora_object' => $variables['object']));
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function islandora_ethnography_preprocess_islandora_story_ethnography(array &$variables) {
+  $object = $variables['object'];
+  $variables['content'] = $object['OBJ']->content;
 }
