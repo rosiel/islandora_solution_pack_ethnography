@@ -93,7 +93,6 @@ function islandora_ethnography_islandora_BDHTuneCModel_islandora_view_object($ob
  */
 function islandora_ethnography_islandora_BDHNotationCModel_islandora_view_object($object, $page_number, $page_size) {
   $output = theme('islandora_notation_ethnography', array('object' => $object));
-  watchdog('rosie', 'view obj ran');
   return array('' => $output);
 }
 /**

@@ -179,6 +179,7 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
  */
 function islandora_ethnography_preprocess_islandora_notation_ethnography(array &$variables) {
   module_load_include('inc', 'islandora', 'includes/metadata');
+  watchdog('rosie', 'preprocess ran');
   $variables['metadata'] = islandora_retrieve_metadata_markup($variables['object'], TRUE);
   $variables['notation'] = theme('islandora_pdfjs_reader', array('fedora_object' => $variables['object']));
 }
