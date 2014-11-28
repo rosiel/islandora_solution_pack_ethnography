@@ -160,7 +160,7 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
     foreach ($expressions as $expression) {
       $expression_obj = islandora_object_load($expression['object']['value']);
       if ($expression_obj) {
-        $variables['notation'][] = theme('islandora_pdfjs_reader', array('fedora_object' => $expression_obj));
+        $variables['notation'][] = theme('islandora_pdfjs', array('fedora_object' => $expression_obj));
       }
     }
     $variables['notation'] = implode(' ', $variables['notation']);
@@ -179,9 +179,8 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
  */
 function islandora_ethnography_preprocess_islandora_notation_ethnography(array &$variables) {
   module_load_include('inc', 'islandora', 'includes/metadata');
-  watchdog('rosie', 'preprocess ran');
   $variables['metadata'] = islandora_retrieve_metadata_markup($variables['object'], TRUE);
-  $variables['notation'] = theme('islandora_pdfjs_reader', array('fedora_object' => $variables['object']));
+  $variables['notation'] = theme('islandora_pdfjs', array('fedora_object' => $variables['object']));
 }
 
 /**
