@@ -51,6 +51,29 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
 }
 
 /**
+ * Edit bio datastream.
+ */
+function islandora_ethnography_menu() {
+  return array(
+    'islandora/object/%islandora_object_bio/edit_bio' => array(
+      'title' => 'Edit Bio',
+      'page callback' => 'islandora_edit_datastream',
+      'page arguments' => array(2),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'includes/datastream.inc',
+      'file path' => drupal_get_path('module', 'islandora'),
+      'access callback' => 'islandora_datastream_access',
+      'access arguments' => array(ISLANDORA_METADATA_EDIT, 2),
+    ),
+  );
+}
+
+function islandora_object_bio_load($pid) {
+  $object = islandora_object_load($pid);
+  return $object['BIO'];
+}
+
+/**
  * Implements hook_CMODEL_PID_islandora_view_object_alter().
  */
 function islandora_ethnography_islandora_organizationCModel_islandora_view_object_alter(&$object, &$rendered) {
@@ -300,3 +323,15 @@ function islandora_ethnography_notation_block() {
 function islandora_ethnography_preprocess_islandora_audio(&$variables) {
 
 }
+
+function islandora_ethnography_remove_format($form, &$form_state) {
+  // Remove the format element, so objective_forms doesn't barf.
+  unset($form_state['complete form']['Content']['format']);
+
+  // Remove line endings from the value.
+  $form_state['values']['Content']['value'] = str_replace("\r\n", '', $form_state['values']['Content']['value']);
+  $form_state['values']['Content']['value'] = str_replace("&nbsp;", '', $form_state['values']['Content']['value']);
+
+
+}
+

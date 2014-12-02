@@ -24,7 +24,7 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
 
     if ($object['BIO']) {
       $bio = $object['BIO']->content;
-      $variables['biography'] = $bio;
+      $variables['biography'] = html_entity_decode($bio);
     }
 
     $variables['title'] = (string) $simplexml->authority->titleInfo->title;
@@ -137,7 +137,7 @@ function islandora_ethnography_preprocess_islandora_dept_ethnography(array &$var
   $variables['metadata'] = islandora_retrieve_metadata_markup($object, TRUE);
   if ($object['BIO']) {
     $bio = $object['BIO']->content;
-    $variables['biography'] = $bio;
+    $variables['biography'] = html_entity_decode($bio);;
   }
 }
 
@@ -170,7 +170,7 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
 
   if ($object['BIO']) {
     $bio = $object['BIO']->content;
-    $variables['biography'] = $bio;
+    $variables['biography'] = html_entity_decode($bio);
   }
 }
 
