@@ -188,5 +188,5 @@ function islandora_ethnography_preprocess_islandora_notation_ethnography(array &
  */
 function islandora_ethnography_preprocess_islandora_story_ethnography(array &$variables) {
   $object = $variables['object'];
-  $variables['content'] = $object['OBJ']->content;
+  $variables['content'] = html_entity_decode($object['OBJ']->content);
 }
