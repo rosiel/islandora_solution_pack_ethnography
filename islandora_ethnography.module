@@ -56,13 +56,23 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
 function islandora_ethnography_menu() {
   return array(
     'islandora/object/%islandora_object_bio/edit_bio' => array(
-      'title' => 'Edit Bio',
+      'title' => 'Edit Bio Text',
       'page callback' => 'islandora_edit_datastream',
       'page arguments' => array(2),
       'type' => MENU_LOCAL_TASK,
       'file' => 'includes/datastream.inc',
       'file path' => drupal_get_path('module', 'islandora'),
       'access callback' => 'islandora_datastream_access',
+      'access arguments' => array(ISLANDORA_METADATA_EDIT, 2),
+    ),
+    'islandora/object/%islandora_object_obj/edit_obj' => array(
+      'title' => 'Edit Text',
+      'page callback' => 'islandora_edit_datastream',
+      'page arguments' => array(2),
+      'type' => MENU_LOCAL_TASK,
+      'file' => 'includes/datastream.inc',
+      'file path' => drupal_get_path('module', 'islandora'),
+      'access callback' => 'islandora_ethnography_edit_story',
       'access arguments' => array(ISLANDORA_METADATA_EDIT, 2),
     ),
   );
@@ -73,6 +83,19 @@ function islandora_object_bio_load($pid) {
   return $object['BIO'];
 }
 
+function islandora_object_obj_load($pid) {
+  $object = islandora_object_load($pid);
+  return $object['OBJ'];
+}
+
+function islandora_ethnography_edit_story($op, $datastream) {
+  if (!in_array('islandora:storyCModel', $datastream->parent->models)) {
+    return FALSE;
+  }
+  else {
+    return islandora_datastream_access($op, $datastream);
+  }
+}
 /**
  * Implements hook_CMODEL_PID_islandora_view_object_alter().
  */
