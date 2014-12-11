@@ -354,7 +354,41 @@ function islandora_ethnography_remove_format($form, &$form_state) {
   // Remove line endings from the value.
   $form_state['values']['Content']['value'] = str_replace("\r\n", '', $form_state['values']['Content']['value']);
   $form_state['values']['Content']['value'] = str_replace("&nbsp;", '', $form_state['values']['Content']['value']);
-
-
 }
 
+/**
+ * Implements hook_process_THEME().
+ */
+function islandora_ethnography_process_islandora_solr_metadata_display(&$variables) {
+  foreach ($variables['solr_fields'] as $fieldname => $data) {
+    foreach ($data['value'] as $index => $value) {
+      if (strpos($value, 'info:fedora') === 0) {
+        $pid = substr($value, 12);
+        $link = islandora_ethnography_get_object_link($pid);
+        if ($link) {
+          $variables['solr_fields'][$fieldname]['value'][$index] = $link;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Return a link to the Islandora object.
+ */
+function islandora_ethnography_get_object_link($pid) {
+  // FIXME cache this?.
+  $query_processor = new IslandoraSolrQueryProcessor();
+  $query_processor->solrQuery = 'PID:"' . $pid . '"';
+  $query_processor->solrParams['fl'] = 'PID, fgs_label_s';
+  $query_processor->executeQuery(FALSE);
+  if ($query_processor->islandoraSolrResult['response']['numFound'] > 0) {
+    $object_label = $query_processor->islandoraSolrResult['response']['objects']['0']['object_label'];
+    $object_url = $query_processor->islandoraSolrResult['response']['objects']['0']['object_url'];
+  }
+  else {
+    return '';
+  }
+  $link = l($object_label, $object_url, array());
+  return $link;
+}
