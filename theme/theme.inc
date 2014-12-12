@@ -142,6 +142,11 @@ function islandora_ethnography_preprocess_islandora_dept_ethnography(array &$var
     $bio = $object['BIO']->content;
     $variables['biography'] = html_entity_decode($bio);;
   }
+  $tn = $object->relationships->get(NULL, 'hasRepresentativeImage');
+  if ($tn) {
+    $tn_pid = $tn[0]['object']['value'];
+    $variables['tn'] = "/islandora/object/$tn_pid/datastream/JPG/view";
+  }
 }
 
 /**
