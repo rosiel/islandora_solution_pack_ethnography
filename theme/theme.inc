@@ -85,8 +85,11 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
       $variables['recent_citations'] = $themed_links;
     }
   }
-  if ($object["TN"]) {
-    $variables['tn'] = "/islandora/object/$object_pid/datastream/TN/view";
+
+  $tn = $object->relationships->get(NULL, 'hasRepresentativeImage');
+  if ($tn) {
+    $tn_pid = $tn[0]['object']['value'];
+    $variables['tn'] = "/islandora/object/$tn_pid/datastream/JPG/view";
   }
   $variables['metadata'] = islandora_retrieve_metadata_markup($object, TRUE);
 }
