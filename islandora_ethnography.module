@@ -51,7 +51,7 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Edit bio datastream.
+ * Implements hook_menu().
  */
 function islandora_ethnography_menu() {
   return array(
@@ -148,7 +148,13 @@ function islandora_ethnography_islandora_storyCModel_islandora_view_object($obje
   $output = theme('islandora_story_ethnography', array('object' => $object));
   return array('' => $output);
 }
-
+/**
+ * Implements hook_CMODEL_PID_islandora_view_object().
+ */
+function islandora_audio_bdh_audioSnippetCModel_islandora_view_object($object, $page_number, $page_size) {
+  $output = theme('islandora_audio', array('islandora_object' => $object));
+  return array('' => $output);
+}
 /**
  * Implements hook_islandora_required_objects().
  */
