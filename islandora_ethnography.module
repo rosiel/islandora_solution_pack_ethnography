@@ -238,7 +238,7 @@ function islandora_ethnography_ingest__ds_composite_datastream(AbstractObject $i
 function islandora_ethnography_get_default_thumbnail($cmodel) {
   $base_path = drupal_get_path('module', 'islandora_ethnography');
   switch ($cmodel) {
-    case 'islandora:sp_audioCModel':
+    case 'bdh:audioSnippetCModel':
       return $base_path . '/images/music-snippet.png';
 
     case 'islandora:BDHTuneCModel':
@@ -260,7 +260,7 @@ function islandora_ethnography_get_default_thumbnail($cmodel) {
 /**
  * Implements hook_islandora_CMODEL_PID_islandora_solr_object_result_alter().
  */
-function islandora_ethnography_islandora_sp_audioCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
+function islandora_ethnography_bdh_audioSnippetCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
   $search_result['thumbnail_url'] = drupal_get_path('module', 'islandora_ethnography') . '/images/music-snippet.png';
 }
 
