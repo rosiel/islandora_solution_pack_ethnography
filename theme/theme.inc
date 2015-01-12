@@ -231,15 +231,17 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   $variables['metadata'] = islandora_retrieve_metadata_markup($object);
   $variables['description'] = islandora_retrieve_description_markup($object);
 
-  $viewer_dsid = 'MP4';
-  $mime = 'video/mp4';
+  $viewer_dsid = 'PROXY_MP4';
+
+  $mime = 'rtmp/mp4';
 
   $video_params = array(
     'pid' => $object->id,
   );
   // Video player.
   if (isset($object[$viewer_dsid]) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$viewer_dsid])) {
-    $video_url = url("islandora/object/{$object->id}/datastream/$viewer_dsid/view");
+    $video_url = $object[$viewer_dsid]->url;
+    $video_url = str_replace('http:', 'rtmp:', $video_url);
     $video_params += array(
       'mime' => $mime,
       'url' => $video_url,
@@ -249,6 +251,11 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   if (isset($object['TN']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['TN'])) {
     $video_params += array(
       'tn' => url("islandora/object/{$object->id}/datastream/TN/view", array('absolute' => TRUE)),
+    );
+  }
+  else {
+    $video_params += array(
+      'tn' => '',
     );
   }
 
