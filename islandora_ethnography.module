@@ -47,6 +47,12 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
       'pattern' => 'islandora_story__',
       'variables' => array('object' => NULL),
     ),
+    'islandora_video_ethnography' => array(
+      'file' => 'theme/theme.inc',
+      'template' => 'theme/islandora-video',
+      'pattern' => 'islandora_video__',
+      'variables' => array('object' => NULL),
+    ),
   );
 }
 
@@ -156,6 +162,13 @@ function islandora_audio_bdh_audioSnippetCModel_islandora_view_object($object, $
   return array('' => $output);
 }
 /**
+ * Implements hook_CMODEL_PID_islandora_view_object().
+ */
+function islandora_ethnography_bdh_videoCModel_islandora_view_object($object, $page_number, $page_size) {
+  $output = theme('islandora_video_ethnography', array('object' => $object));
+  return array('' => $output);
+}
+/**
  * Implements hook_islandora_required_objects().
  */
 function islandora_ethnography_islandora_required_objects(IslandoraTuque $connection) {
@@ -185,6 +198,14 @@ function islandora_ethnography_islandora_required_objects(IslandoraTuque $connec
   $story_content_model->models = 'fedora-system:ContentModel-3.0';
   // DS-COMPOSITE-MODEL Datastream.
   islandora_ethnography_ingest__ds_composite_datastream($notation_content_model, $module_path . "/xml/islandora_story_ds_composite_model.xml");
+  
+  // video Content Model.
+  $video_content_model = $connection->repository->constructObject('islandora:videoSnippetCModel');
+  $video_content_model->owner = 'fedoraAdmin';
+  $video_content_model->label = 'Islandora Video Content Model';
+  $video_content_model->models = 'fedora-system:ContentModel-3.0';
+  // DS-COMPOSITE-MODEL Datastream.
+  islandora_ethnography_ingest__ds_composite_datastream($notation_content_model, $module_path . "/xml/islandora_video_snippet_ds_composite_model.xml");
 
   /*
   // Tune Collection.
@@ -214,6 +235,7 @@ function islandora_ethnography_islandora_required_objects(IslandoraTuque $connec
         $tune_content_model,
         $notation_content_model,
         $story_content_model,
+        $video_content_model,
       ),
     ),
   );
