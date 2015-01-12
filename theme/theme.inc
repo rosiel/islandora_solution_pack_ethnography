@@ -202,7 +202,7 @@ function islandora_ethnography_preprocess_islandora_story_ethnography(array &$va
 /**
  * Implements hook_preprocess().
  */
-function islandora_video_preprocess_islandora_video(array &$variables) {
+function islandora_ethnography_preprocess_islandora_video_ethnography(array &$variables) {
   module_load_include('inc', 'islandora', 'includes/datastream');
   module_load_include('inc', 'islandora', 'includes/utilities');
   module_load_include('inc', 'islandora', 'includes/solution_packs');
