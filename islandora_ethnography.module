@@ -49,7 +49,7 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
     ),
     'islandora_video_ethnography' => array(
       'file' => 'theme/theme.inc',
-      'template' => 'theme/islandora-video',
+      'template' => 'theme/islandora-video-eth',
       'pattern' => 'islandora_video__',
       'variables' => array('object' => NULL),
     ),
@@ -168,6 +168,14 @@ function islandora_ethnography_bdh_videoCModel_islandora_view_object($object, $p
   $output = theme('islandora_video_ethnography', array('object' => $object));
   return array('' => $output);
 }
+/**
+ * Implements hook_CMODEL_PID_islandora_view_object().
+ */
+function islandora_ethnography_bdh_videoSnippetCModel_islandora_view_object($object, $page_number, $page_size) {
+  $output = theme('islandora_video_ethnography', array('object' => $object));
+  return array('' => $output);
+}
+
 /**
  * Implements hook_islandora_required_objects().
  */
