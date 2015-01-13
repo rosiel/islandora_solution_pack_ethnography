@@ -210,6 +210,7 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   module_load_include('inc', 'islandora', 'includes/metadata');
   drupal_add_js('misc/form.js');
   drupal_add_js('misc/collapse.js');
+
   $object = $variables['object'];
   $repository = $object->repository;
   // We should eventually remove the DC object and dc_array code as it only
@@ -267,5 +268,7 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   else {
     $variables['islandora_content'] = NULL;
   }
+  drupal_add_css(drupal_get_path('module', 'islandora_ethnography') . '/css/islandora-video.css');
+
   return array('' => $viewer);
 }

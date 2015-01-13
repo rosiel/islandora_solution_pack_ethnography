@@ -1,0 +1,26 @@
+.video-js {
+    width: auto !important;
+    height: auto !important;
+    padding-top: 56.25%;
+}
+
+.islandora-video-content {
+    width: 99%;
+}
+.vjs-default-skin .vjs-big-play-button {
+    left: 40%;
+    top: 40%;
+    width: 20%;
+    height: 20%;
+}
+
+
+/*.video-js video {position: relative !important;} */
+/*
+.video-js .vjs-big-play-button {
+    top: 50%;
+    left: 50%;
+    margin:-4em 0 0 -6em;
+}
+/*
+
