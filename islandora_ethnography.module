@@ -428,3 +428,25 @@ function islandora_ethnography_get_object_link($pid) {
   $link = l($object_label, $object_url, array());
   return $link;
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function islandora_ethnography_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == "contact_site_form") {
+    array_unshift($form['#validate'], 'islandora_ethnography_contact_form_validate');
+  }
+
+}
+
+/**
+ * Custom validator for site form, adds the url of page from to the message.
+ */
+function islandora_ethnography_contact_form_validate($form, &$form_state) {
+  if ($form_state['submitted'] == TRUE) {
+    $referring_page = url($_GET['path'], array('absolute' => TRUE));
+    $form_state['values']['message'] .= t("\n This message was sent in regard to the page at !referring_page.", array('!referring_page' => $referring_page));
+
+  }
+  return;
+}
