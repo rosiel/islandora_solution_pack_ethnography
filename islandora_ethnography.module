@@ -434,6 +434,8 @@ function islandora_ethnography_get_object_link($pid) {
  */
 function islandora_ethnography_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == "contact_site_form") {
+    $page = menu_get_item($_GET['path']);
+    $form['subject']['#default_value'] = t('Feedback for the page "!title" on Bowing Down Home', array('!title' => $page['title']));
     array_unshift($form['#validate'], 'islandora_ethnography_contact_form_validate');
   }
 
@@ -448,5 +450,4 @@ function islandora_ethnography_contact_form_validate($form, &$form_state) {
     $form_state['values']['message'] .= t("\n This message was sent in regard to the page at !referring_page.", array('!referring_page' => $referring_page));
 
   }
-  return;
 }
