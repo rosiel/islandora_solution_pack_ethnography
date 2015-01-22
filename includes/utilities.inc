@@ -6,6 +6,88 @@
  */
 
 /**
+ * Format links to audio objects for audiojs_global.
+ *
+ * This function will scan html text for links to islandora objects
+ * that have the class "ethnography-link". (fix: remove condition?)
+ * It will add the classes "audiojs-global-link silent" and a
+ * data-source attribute pointing to the audio datastream, currently
+ * only PROXY_MP3.
+ *
+ * This won't do anything alone, but if the audiojs_global module
+ * is enabled, these links will play in the global player instead
+ * of redirecting to the islandora object.
+ *
+ * @param string $content
+ *   The html content to search, as a string.
+ *
+ * @return string
+ *   The same content, with links pimped.
+ */
+function islandora_ethnography_replace_audio_links($content) {
+  $xml = new DOMDocument();
+  $content = preg_replace('/&(?!#?[a-z0-9]+;)/', '&amp;', $content);
+  if (!$xml->loadHTML($content)) {
+    print ("Unable to load HTML.");
+  }
+  else {
+    foreach ($xml->getElementsByTagName('a') as $link) {
+      $classes = explode(' ', $link->getAttribute('class'));
+      $target = $link->getAttribute('href');
+      $target = ltrim($target, "\/");
+      if (strpos($target, 'islandora/object/' !== 0)) {
+        continue;
+      }
+
+      // Only rewrite links with the class 'ethnography-link'. FIXME?
+      if (in_array('ethnography-link', $classes)) {
+        $pid = arg(2, $target);
+        $safe_pid = str_replace(':', '_', $pid);
+        $cache = cache_get($safe_pid, 'cache_islandora_ethnography');
+        if ($cache) {
+          if ($cache->data == 'no audio') {
+            continue;
+          }
+          else {
+            $classes[] = 'audiojs-global-link';
+            $classes[] = 'silent';
+            $link->setAttribute('class', implode(' ', $classes));
+            $link->setAttribute('data-source', $cache->data);
+          }
+        }
+        else {
+          if (!$obj = islandora_object_load($pid)) {
+            continue;
+          }
+          else {
+            if ($obj['PROXY_MP3']) {
+              $data_source = '/' . $target . '/datastream/PROXY_MP3';
+              cache_set($safe_pid, $data_source, 'cache_islandora_ethnography');
+              $classes[] = 'audiojs-global-link';
+              $classes[] = 'silent';
+              $link->setAttribute('class', implode(' ', $classes));
+              $link->setAttribute('data-source', $data_source);
+            }
+            else {
+              cache_set($safe_pid, 'no audio', 'cache_islandora_ethnography');
+            }
+          }
+        }
+        $test = cache_get($safe_pid, 'cache_islandora_ethnography');
+        $a = 2;
+
+
+      }
+
+    }
+
+
+  }
+
+  return $xml->saveHTML();
+}
+
+/**
  * This function will add the entity content model to an object.
  *
  * Due to natural inheritance in the data model all entity type
@@ -88,29 +170,6 @@ function islandora_ethnography_ingest__entity_ds_composite_datastream(AbstractOb
   $ds_composite_datastream->mimetype = 'text/xml';
   $ds_composite_datastream->setContentFromFile("$module_path/xml/islandora_entity_ds_composite_model.xml", FALSE);
   $islandora_object->ingestDatastream($ds_composite_datastream);
-}
-
-/**
- * Creates themed list of scholar's citations.
- *
- * @param AbstractObject $object
- *   Object representing scholar
- *
- * @return html
- *   themed list of citations
- */
-function islandora_ethnography_create_citation_tab(AbstractObject $object) {
-  module_load_include('inc', 'islandora_entities', 'includes/utilities');
-  if ($object['MADS']) {
-    $mads = $object['MADS']->content;
-    $simplexml = simplexml_load_string($mads);
-    $identifiers = $simplexml->identifier;
-    foreach ($identifiers as $identifier) {
-      if ($identifier['type'] == 'u1') {
-        return islandora_entities_get_related((string) $identifier, (string) $simplexml->authority->titleInfo->title, 'citations');
-      }
-    }
-  }
 }
 
 /**

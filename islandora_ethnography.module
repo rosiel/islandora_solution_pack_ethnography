@@ -84,6 +84,13 @@ function islandora_ethnography_menu() {
   );
 }
 
+/**
+ * Implements hook_flush_caches().
+ */
+function my_custom_module_flush_caches() {
+  return array('cache_islandora_ethnography');
+}
+
 function islandora_object_bio_load($pid) {
   $object = islandora_object_load($pid);
   return $object['BIO'];

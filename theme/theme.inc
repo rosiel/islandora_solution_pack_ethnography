@@ -24,7 +24,7 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
 
     if ($object['BIO']) {
       $bio = $object['BIO']->content;
-      $variables['biography'] = html_entity_decode($bio);
+      $variables['biography'] = islandora_ethnography_replace_audio_links(html_entity_decode($bio));
     }
 
     $variables['title'] = (string) $simplexml->authority->titleInfo->title;
@@ -136,11 +136,13 @@ function islandora_ethnography_get_dept_members($dept, $pid) {
  */
 function islandora_ethnography_preprocess_islandora_dept_ethnography(array &$variables) {
   module_load_include('inc', 'islandora', 'includes/metadata');
+  module_load_include('inc', 'islandora_ethnography', 'includes/utilities');
+
   $object = $variables['object'];
   $variables['metadata'] = islandora_retrieve_metadata_markup($object, TRUE);
   if ($object['BIO']) {
     $bio = $object['BIO']->content;
-    $variables['biography'] = html_entity_decode($bio);;
+    $variables['biography'] = islandora_ethnography_replace_audio_links(html_entity_decode($bio));
   }
   $tn = $object->relationships->get(NULL, 'hasRepresentativeImage');
   if ($tn) {
@@ -178,7 +180,7 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
 
   if ($object['BIO']) {
     $bio = $object['BIO']->content;
-    $variables['biography'] = html_entity_decode($bio);
+    $variables['biography'] = islandora_ethnography_replace_audio_links(html_entity_decode($bio));
   }
 }
 
@@ -195,8 +197,10 @@ function islandora_ethnography_preprocess_islandora_notation_ethnography(array &
  * Implements hook_preprocess().
  */
 function islandora_ethnography_preprocess_islandora_story_ethnography(array &$variables) {
+  module_load_include('inc', 'islandora_ethnography', 'includes/utilities');
   $object = $variables['object'];
-  $variables['content'] = html_entity_decode($object['OBJ']->content);
+  $content = html_entity_decode($object['OBJ']->content);
+  $variables['content'] = islandora_ethnography_replace_audio_links($content);
 }
 
 /**
