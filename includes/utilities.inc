@@ -87,10 +87,10 @@ function islandora_ethnography_replace_audio_links($content) {
                   $times[$key] = $time_seconds;
                 }
                 $start_time = $times['0'];
-                $stop_time = $times['1'];
+                $stop_time = (isset($times['1'])) ? $times['1'] : NULL;
                 $data_source .= "#t=" . $start_time;
                 if ($stop_time) {
-                  $data_source .=  ',' . $stop_time;
+                  $data_source .= ',' . $stop_time;
                 }
               }
               $classes[] = 'audiojs-global-link';
