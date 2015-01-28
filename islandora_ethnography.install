@@ -17,4 +17,3 @@ function islandora_ethnography_update_7001(&$sandbox) {
   $t = get_t();
   return $t("Islandora ethnography caching updates complete.");
 }
-

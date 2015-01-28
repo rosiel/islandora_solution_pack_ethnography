@@ -57,31 +57,26 @@ function islandora_ethnography_replace_audio_links($content) {
         }
         else {
           if (!$obj = islandora_object_load($pid)) {
+            watchdog('rosie', 'FOUND IT' );
             continue;
           }
           else {
+            // Look for audio. Currently, only check for a PROXY_MP3 datastream.
             if ($obj['PROXY_MP3']) {
               $data_source = '/' . $target . '/datastream/PROXY_MP3';
-              cache_set($safe_pid, $data_source, 'cache_islandora_ethnography');
               $classes[] = 'audiojs-global-link';
               $classes[] = 'silent';
               $link->setAttribute('class', implode(' ', $classes));
               $link->setAttribute('data-source', $data_source);
+              cache_set($safe_pid, $data_source, 'cache_islandora_ethnography');
             }
             else {
               cache_set($safe_pid, 'no audio', 'cache_islandora_ethnography');
             }
           }
         }
-        $test = cache_get($safe_pid, 'cache_islandora_ethnography');
-        $a = 2;
-
-
       }
-
     }
-
-
   }
 
   return $xml->saveHTML();
