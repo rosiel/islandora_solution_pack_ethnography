@@ -41,9 +41,13 @@ function islandora_ethnography_replace_audio_links($content) {
 
       // Only rewrite links with the class 'ethnography-link'. FIXME?
       if (in_array('ethnography-link', $classes)) {
-        $pid = arg(2, $target);
+        $pid_part = arg(2, $target);
+        $pid_part = explode('#', $pid_part);
+        $pid = $pid_part['0'];
+        $time = isset($pid_part['1']) ? $pid_part['1'] : NULL;
         $safe_pid = str_replace(':', '_', $pid);
         $cache = cache_get($safe_pid, 'cache_islandora_ethnography');
+        $cache = FALSE;
         if ($cache) {
           if ($cache->data == 'no audio') {
             continue;
@@ -57,18 +61,42 @@ function islandora_ethnography_replace_audio_links($content) {
         }
         else {
           if (!$obj = islandora_object_load($pid)) {
-            watchdog('rosie', 'FOUND IT' );
             continue;
           }
           else {
             // Look for audio. Currently, only check for a PROXY_MP3 datastream.
             if ($obj['PROXY_MP3']) {
-              $data_source = '/' . $target . '/datastream/PROXY_MP3';
+              $data_source = '/islandora/object/' . $pid . '/datastream/PROXY_MP3';
+              cache_set($safe_pid, $data_source, 'cache_islandora_ethnography');
+
+              if ($time) {
+                // Explode start,stop time on comma.
+                $times = explode(',', $time);
+                // Transform time in 0h00m00s format to 0:00:00 format.
+                foreach ($times as $key => $time) {
+                  $time = str_replace('h', ':', $time);
+                  $time = str_replace('m', ':', $time);
+                  $time = rtrim($time, 's');
+                  // Now transform that into seconds.
+                  $hours = NULL;
+                  $minutes = NULL;
+                  $seconds = NULL;
+                  sscanf($time, "%d:%d:%d", $hours, $minutes, $seconds);
+
+                  $time_seconds = $seconds !== NULL ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
+                  $times[$key] = $time_seconds;
+                }
+                $start_time = $times['0'];
+                $stop_time = $times['1'];
+                $data_source .= "#t=" . $start_time;
+                if ($stop_time) {
+                  $data_source .=  ',' . $stop_time;
+                }
+              }
               $classes[] = 'audiojs-global-link';
               $classes[] = 'silent';
               $link->setAttribute('class', implode(' ', $classes));
               $link->setAttribute('data-source', $data_source);
-              cache_set($safe_pid, $data_source, 'cache_islandora_ethnography');
             }
             else {
               cache_set($safe_pid, 'no audio', 'cache_islandora_ethnography');
