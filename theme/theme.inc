@@ -90,6 +90,24 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
   if ($tn) {
     $tn_pid = $tn[0]['object']['value'];
     $variables['tn'] = "/islandora/object/$tn_pid/datastream/JPG/view";
+    module_load_include('inc', 'islandora_solr_metadata', 'theme/theme');
+    $tn_object = new stdClass();
+    $tn_object->id = $tn_pid;
+    $solr_fields = array(
+      'mods_accessCondition_copyright_s' => array(
+        'displayLabel' => 'Copyright',
+        'value' => array(),
+        'hyperlink' => '0',
+        'weight' => '1',
+      ),
+    );
+    $success = islandora_solr_metadata_query_fields($tn_object, $solr_fields);
+    if ($success) {
+      if (!empty($solr_fields['mods_accessCondition_copyright_s']['value'])) {
+        $variables['tn_copyright'] = $solr_fields['mods_accessCondition_copyright_s']['value'][0];
+      }
+    }
+
   }
   $variables['metadata'] = islandora_retrieve_metadata_markup($object, TRUE);
 }

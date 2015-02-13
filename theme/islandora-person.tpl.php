@@ -10,6 +10,9 @@
     <div class="islandora-object-image">
       <?php if (isset($variables['tn'])): ?>
         <img src="<?php print $variables['tn']; ?>"/>
+        <?php if (isset($variables['tn_copyright'])): ?>
+          <div><?php print $variables['tn_copyright'] ?> </div>
+        <?php endif; ?>
       <?php endif; ?>
     </div>
     <div class="islandora-object-metadata">
