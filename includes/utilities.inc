@@ -24,7 +24,9 @@
  * @return string
  *   The same content, with links pimped.
  */
-function islandora_ethnography_replace_audio_links($content) {
+function islandora_ethnography_replace_ethnography_links($content) {
+  module_load_include('inc', 'islandora', 'includes/utilities');
+  module_load_include('inc', 'islandora', 'includes/solution_packs');
   $xml = new DOMDocument();
   $content = preg_replace('/&(?!#?[a-z0-9]+;)/', '&amp;', $content);
   if (!$xml->loadHTML($content)) {
@@ -46,61 +48,59 @@ function islandora_ethnography_replace_audio_links($content) {
         $pid = $pid_part['0'];
         $time = isset($pid_part['1']) ? $pid_part['1'] : NULL;
         $safe_pid = str_replace(':', '_', $pid);
-        $cache = cache_get($safe_pid, 'cache_islandora_ethnography');
-        $cache = FALSE;
-        if ($cache) {
-          if ($cache->data == 'no audio') {
-            continue;
-          }
-          else {
-            $classes[] = 'audiojs-global-link';
-            $classes[] = 'silent';
-            $link->setAttribute('class', implode(' ', $classes));
-            $link->setAttribute('data-source', $cache->data);
-          }
-        }
-        else {
+
+        // Get data about this object, either from cache, or from the object.
+        $data = cache_get($safe_pid, 'cache_islandora_ethnography');
+        if (!$data) {
           if (!$obj = islandora_object_load($pid)) {
             continue;
           }
           else {
-            // Look for audio. Currently, only check for a PROXY_MP3 datastream.
-            if ($obj['PROXY_MP3']) {
-              $data_source = '/islandora/object/' . $pid . '/datastream/PROXY_MP3';
-              cache_set($safe_pid, $data_source, 'cache_islandora_ethnography');
+            $data = islandora_ethnography_get_object_data($obj);
+            cache_set($safe_pid, $data, 'cache_islandora_ethnography');
+          }
+        }
+        else {
+          $data = $data->data;
+        }
 
-              if ($time) {
-                // Explode start,stop time on comma.
-                $times = explode(',', $time);
-                // Transform time in 0h00m00s format to 0:00:00 format.
-                foreach ($times as $key => $time) {
-                  $time = str_replace('h', ':', $time);
-                  $time = str_replace('m', ':', $time);
-                  $time = rtrim($time, 's');
-                  // Now transform that into seconds.
-                  $hours = NULL;
-                  $minutes = NULL;
-                  $seconds = NULL;
-                  sscanf($time, "%d:%d:%d", $hours, $minutes, $seconds);
+        // If the object has a PROXY_MP3 datastream, trick the link out
+        // with classes to make it play in the global audiojs player.
+        if (in_array('PROXY_MP3', $data['datastreams'], TRUE)) {
+          $classes[] = 'audiojs-global-link';
+          $classes[] = 'silent';
+          $link->setAttribute('class', implode(' ', $classes));
+          $link->setAttribute('data-source', '/islandora/object/' . $pid . '/datastream/PROXY_MP3');
+        }
 
-                  $time_seconds = $seconds !== NULL ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
-                  $times[$key] = $time_seconds;
-                }
-                $start_time = $times['0'];
-                $stop_time = (isset($times['1'])) ? $times['1'] : NULL;
-                $data_source .= "#t=" . $start_time;
-                if ($stop_time) {
-                  $data_source .= ',' . $stop_time;
-                }
-              }
-              $classes[] = 'audiojs-global-link';
-              $classes[] = 'silent';
-              $link->setAttribute('class', implode(' ', $classes));
-              $link->setAttribute('data-source', $data_source);
-            }
-            else {
-              cache_set($safe_pid, 'no audio', 'cache_islandora_ethnography');
-            }
+        if (in_array('PROXY_MP4', $data['datastreams'], TRUE)) {
+          // The following is almost copy-pasta from preprocess_islandora_video_ethnography.
+          // DOES NOT CHECK PERMISSIONS FOR PROXY_MP4
+          $object = islandora_object_load($pid);
+          $video_params = array(
+            'pid' => $pid,
+          );
+          $video_url = $data['proxy_mp4'];
+          $video_url = str_replace('http:', 'rtmp:', $video_url);
+          $video_params += array(
+            'mime' => 'video/mp4',
+            'url' => $video_url,
+          );
+
+          if (in_array('TN', $data['datastreams'])) {
+            $video_params += array(
+              'tn' => url("islandora/object/$pid/datastream/TN/view", array('absolute' => TRUE)),
+            );
+          }
+          $viewer = islandora_get_viewer($video_params, 'islandora_video_viewers', $object);
+          if ($viewer) {
+            // This is silly, but we need to DOMDocument-ify the html string.
+            $videoDOM = DOMDocument::loadHTML($viewer);
+            $xpath = "/html/body/child::node()[1]";
+            $videoDOMXpath = new DOMXpath($videoDOM);
+            $videoNode = $videoDOMXpath->query($xpath)->item(0);
+            $importedVideoNode = $xml->importNode($videoNode);
+            $link->parentNode->replaceChild($importedVideoNode, $link);
           }
         }
       }

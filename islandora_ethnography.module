@@ -81,13 +81,22 @@ function islandora_ethnography_menu() {
       'access callback' => 'islandora_ethnography_edit_story',
       'access arguments' => array(ISLANDORA_METADATA_EDIT, 2),
     ),
+    'islandora/getinfo/%islandora_object/%' => array(
+      'title' => 'Get object info',
+      'page callback' => 'islandora_ethnography_get_info',
+      'page arguments' => array(2,3),
+      'type' => MENU_CALLBACK,
+      'file' => 'includes/callbacks.inc',
+      'access callback' => 'islandora_object_access_callback',
+      'access arguments' => array(ISLANDORA_VIEW_OBJECTS, 2),
+    ),
   );
 }
 
 /**
  * Implements hook_flush_caches().
  */
-function my_custom_module_flush_caches() {
+function islandora_ethnography_flush_caches() {
   return array('cache_islandora_ethnography');
 }
 

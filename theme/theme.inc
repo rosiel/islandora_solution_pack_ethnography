@@ -24,7 +24,7 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
 
     if ($object['BIO']) {
       $bio = $object['BIO']->content;
-      $variables['biography'] = islandora_ethnography_replace_audio_links(html_entity_decode($bio));
+      $variables['biography'] = islandora_ethnography_replace_ethnography_links(html_entity_decode($bio));
     }
 
     $variables['title'] = (string) $simplexml->authority->titleInfo->title;
@@ -160,7 +160,7 @@ function islandora_ethnography_preprocess_islandora_dept_ethnography(array &$var
   $variables['metadata'] = islandora_retrieve_metadata_markup($object, TRUE);
   if ($object['BIO']) {
     $bio = $object['BIO']->content;
-    $variables['biography'] = islandora_ethnography_replace_audio_links(html_entity_decode($bio));
+    $variables['biography'] = islandora_ethnography_replace_ethnography_links(html_entity_decode($bio));
   }
   $tn = $object->relationships->get(NULL, 'hasRepresentativeImage');
   if ($tn) {
@@ -198,7 +198,7 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
 
   if ($object['BIO']) {
     $bio = $object['BIO']->content;
-    $variables['biography'] = islandora_ethnography_replace_audio_links(html_entity_decode($bio));
+    $variables['biography'] = islandora_ethnography_replace_ethnography_links(html_entity_decode($bio));
   }
 }
 
@@ -218,7 +218,7 @@ function islandora_ethnography_preprocess_islandora_story_ethnography(array &$va
   module_load_include('inc', 'islandora_ethnography', 'includes/utilities');
   $object = $variables['object'];
   $content = html_entity_decode($object['OBJ']->content);
-  $variables['content'] = islandora_ethnography_replace_audio_links($content);
+  $variables['content'] = islandora_ethnography_replace_ethnography_links($content);
 }
 
 /**
