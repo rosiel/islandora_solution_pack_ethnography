@@ -140,7 +140,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
             $videoDOMXpath = new DOMXpath($videoDOM);
             $videoNode = $videoDOMXpath->query($xpath)->item(0);
             $importedVideoNode = $xml->importNode($videoNode, TRUE);
-            $link->parentNode->replaceChild($importedVideoNode, $link);
+            $link->parentNode->insertBefore($importedVideoNode, $link);
           }
         }
       }
