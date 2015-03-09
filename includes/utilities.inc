@@ -106,6 +106,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
             );
           }
 
+          // Add Thumbnail.
           if (in_array('TN', $data['datastreams'])) {
             $poster_url = '/islandora/object/' . $pid . '/datastream/TN/view';
             $poster_mime = 'image/jpg';
@@ -129,6 +130,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
           );
           $viewer = theme('videojs', $vars);
           if ($viewer) {
+            videojs_add();
             // This is silly, but we need to DOMDocument-ify the html string.
             $videoDOM = new DOMDocument;
             libxml_use_internal_errors(true);
@@ -136,7 +138,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
             $xpath = "/html/body/child::node()[1]";
             $videoDOMXpath = new DOMXpath($videoDOM);
             $videoNode = $videoDOMXpath->query($xpath)->item(0);
-            $importedVideoNode = $xml->importNode($videoNode);
+            $importedVideoNode = $xml->importNode($videoNode, TRUE);
             $link->parentNode->replaceChild($importedVideoNode, $link);
           }
         }
