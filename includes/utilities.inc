@@ -110,6 +110,32 @@ function islandora_ethnography_replace_ethnography_links($content) {
   return $xml->saveHTML();
 }
 
+/*
+ * Create an array to cache basic info about objects.
+ */
+function islandora_ethnography_get_object_data(AbstractObject $object) {
+  $data = array(
+    'datastreams' => array(),
+    'models' => array(),
+    'proxy_mp4' => NULL,
+    'label' => '',
+  );
+
+  foreach($object->models as $model) {
+    $data['models'][] = $model;
+  }
+  foreach($object as $ds) {
+    $data['datastreams'][] = $ds->id;
+  }
+  $data['label'] = $object->label;
+  if ($object['PROXY_MP4']) {
+    $data['proxy_mp4'] = $object['PROXY_MP4']->url;
+  }
+
+  return $data;
+
+}
+
 /**
  * This function will add the entity content model to an object.
  *
