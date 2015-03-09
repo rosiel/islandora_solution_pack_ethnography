@@ -76,26 +76,63 @@ function islandora_ethnography_replace_ethnography_links($content) {
         if (in_array('PROXY_MP4', $data['datastreams'], TRUE)) {
           // The following is almost copy-pasta from preprocess_islandora_video_ethnography.
           // DOES NOT CHECK PERMISSIONS FOR PROXY_MP4
-          $object = islandora_object_load($pid);
-          $video_params = array(
-            'pid' => $pid,
+          $source_url = $data['proxy_mp4'];
+
+          // Add RTMP source
+          $source_url_rtmp = str_replace('http', 'rtmp', $source_url);
+          $vars['items'][] = array(
+            'uri' => $source_url_rtmp,
+            'filemime' => 'rtmp/mp4',
           );
-          $video_url = $data['proxy_mp4'];
-          $video_url = str_replace('http:', 'rtmp:', $video_url);
-          $video_params += array(
-            'mime' => 'video/mp4',
-            'url' => $video_url,
+          // Add Apple HLS source
+          $source_url_hls = $source_url . '/playlist.m3u8';
+          $vars['items'][] = array(
+            'uri' => $source_url_hls,
+            'filemime' => 'application/vnd.apple.mpegurl',
           );
 
-          if (in_array('TN', $data['datastreams'])) {
-            $video_params += array(
-              'tn' => url("islandora/object/$pid/datastream/TN/view", array('absolute' => TRUE)),
+          // Add Silverlight Microsoft Smooth Streaming source (?not sure if works?)
+          $source_url_mss = $source_url . '/Manifest';
+          $vars['items'][] = array(
+            'uri' => $source_url_mss,
+            'filemime' => 'application/x-silverlight-2',
+          );
+
+          // Add OBJ source.
+          if (in_array('OBJ', $data['datastreams'])) {
+            $vars['items'][] = array(
+              'uri' => '/islandora/object/' . $pid . '/datastream/OBJ/view',
+              'filemime' => 'video/mp4',
             );
           }
-          $viewer = islandora_get_viewer($video_params, 'islandora_video_viewers', $object);
+
+          if (in_array('TN', $data['datastreams'])) {
+            $poster_url = '/islandora/object/' . $pid . '/datastream/TN/view';
+            $poster_mime = 'image/jpg';
+          }
+          if (isset($poster_url)) {
+            $vars['items'][] = array(
+              'uri' => $poster_url,
+              'filemime' => $poster_mime,
+            );
+          }
+
+          $vars['player_id'] = 'videojs-'. str_replace(':', '_', $pid);
+          $vars['posterimage_style'] = NULL;
+          $vars['attributes'] = array(
+            'width' => 640,
+            'height' => 360,
+            'loop' => FALSE,
+            'autoplay' => FALSE,
+            'preload' => 'none',
+            'hidecontrols' => FALSE,
+          );
+          $viewer = theme('videojs', $vars);
           if ($viewer) {
             // This is silly, but we need to DOMDocument-ify the html string.
-            $videoDOM = DOMDocument::loadHTML($viewer);
+            $videoDOM = new DOMDocument;
+            libxml_use_internal_errors(true);
+            $videoDOM->loadHTML($viewer);
             $xpath = "/html/body/child::node()[1]";
             $videoDOMXpath = new DOMXpath($videoDOM);
             $videoNode = $videoDOMXpath->query($xpath)->item(0);
