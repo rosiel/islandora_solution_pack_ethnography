@@ -77,6 +77,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
           // The following is almost copy-pasta from preprocess_islandora_video_ethnography.
           // DOES NOT CHECK PERMISSIONS FOR PROXY_MP4
           $source_url = $data['proxy_mp4'];
+          $vars = array();
 
           // Add RTMP source
           $source_url_rtmp = str_replace('http', 'rtmp', $source_url);
