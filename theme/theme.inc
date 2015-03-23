@@ -232,6 +232,9 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   module_load_include('inc', 'islandora', 'includes/metadata');
   drupal_add_js('misc/form.js');
   drupal_add_js('misc/collapse.js');
+  $videojs_transcript_path = libraries_get_path("videojs-transcript");
+  drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
+  drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/transcript.js', array('weight'=>11, 'scope' => 'footer'));
 
   $object = $variables['object'];
   $repository = $object->repository;
@@ -255,6 +258,7 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   $variables['description'] = islandora_retrieve_description_markup($object);
 
   $viewer_dsid = 'PROXY_MP4';
+  $viewer_dsid_backup = 'OBJ';
 
   $mime = 'rtmp/mp4';
 
@@ -281,6 +285,19 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
       'tn' => '',
     );
   }
+
+  /*
+  $tracks = array();
+  // Transcript
+  if (isset($object['WEBVTT']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object['WEBVTT'])) {
+    $tracks[] = url("islandora/object/{$object->id}/rawdatastream/WEBVTT", array('absolute' => TRUE));
+  }
+  if (!empty($tracks)) {
+    $video_params += array(
+      'tracks' => $tracks,
+    );
+  }
+  */
 
   $viewer = islandora_get_viewer($video_params, 'islandora_video_viewers', $object);
   $variables['islandora_content'] = '';

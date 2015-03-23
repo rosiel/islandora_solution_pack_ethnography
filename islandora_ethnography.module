@@ -90,6 +90,16 @@ function islandora_ethnography_menu() {
       'access callback' => 'islandora_object_access_callback',
       'access arguments' => array(ISLANDORA_VIEW_OBJECTS, 2),
     ),
+    'islandora/object/%islandora_object/rawdatastream/%' => array(
+      'title' => 'Deliver datastream as HTML content',
+      'page callback' => 'islandora_ethnography_deliver_datastream',
+      'page arguments' => array(2,4),
+      'type' => MENU_CALLBACK,
+      'file' => 'includes/callbacks.inc',
+      'access callback' => 'islandora_object_access_callback',
+      'access arguments' => array(ISLANDORA_VIEW_OBJECTS, 2), //FIXME change to view ds permission.
+    ),
+
   );
 }
 
@@ -174,6 +184,10 @@ function islandora_ethnography_islandora_storyCModel_islandora_view_object($obje
  * Implements hook_CMODEL_PID_islandora_view_object().
  */
 function islandora_audio_bdh_audioSnippetCModel_islandora_view_object($object, $page_number, $page_size) {
+  $videojs_transcript_path = libraries_get_path("videojs-transcript");
+  drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
+  drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/transcript.js', array('weight'=>11, 'scope' => 'footer'));
+
   $output = theme('islandora_audio', array('islandora_object' => $object));
   return array('' => $output);
 }
