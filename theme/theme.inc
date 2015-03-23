@@ -235,7 +235,7 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   $videojs_transcript_path = libraries_get_path("videojs-transcript");
   drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
   drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/transcript.js', array('weight'=>11, 'scope' => 'footer'));
-
+  drupal_add_css($videojs_transcript_path . '/css/videojs-transcript2.css');
   $object = $variables['object'];
   $repository = $object->repository;
   // We should eventually remove the DC object and dc_array code as it only
@@ -271,6 +271,13 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
     $video_url = str_replace('http:', 'rtmp:', $video_url);
     $video_params += array(
       'mime' => $mime,
+      'url' => $video_url,
+    );
+  }
+  elseif (isset($object[$viewer_dsid_backup]) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$viewer_dsid_backup])) {
+    $video_url = url("islandora/object/{$object->id}/datastream/$viewer_dsid_backup/view", array('absolute' => TRUE));
+    $video_params += array(
+      'mime' => 'video/mp4',
       'url' => $video_url,
     );
   }

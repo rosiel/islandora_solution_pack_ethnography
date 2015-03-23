@@ -187,6 +187,7 @@ function islandora_audio_bdh_audioSnippetCModel_islandora_view_object($object, $
   $videojs_transcript_path = libraries_get_path("videojs-transcript");
   drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
   drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/transcript.js', array('weight'=>11, 'scope' => 'footer'));
+  drupal_add_css($videojs_transcript_path . '/css/videojs-transcript.css');
 
   $output = theme('islandora_audio', array('islandora_object' => $object));
   return array('' => $output);
@@ -478,6 +479,16 @@ function islandora_ethnography_contact_form_validate($form, &$form_state) {
   if ($form_state['submitted'] == TRUE) {
     $referring_page = url($_GET['path'], array('absolute' => TRUE));
     $form_state['values']['message'] .= t("\n This message was sent in regard to the page at !referring_page.", array('!referring_page' => $referring_page));
+
+  }
+}
+
+/**
+ * Implements hook_islandora_datastream_modified().
+ */
+function islandora_ethnography_islandora_datastream_modified(AbstractObject $object, AbstractDatastream $datastream) {
+  if ($datastream->id == 'MADS') {
+    module_load_include('inc', 'xml_form_builder', 'includes/derivatives');
 
   }
 }
