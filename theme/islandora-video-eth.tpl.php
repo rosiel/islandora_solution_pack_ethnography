@@ -25,6 +25,11 @@
         <?php print $islandora_content; ?>
       </div>
     <?php endif; ?>
+    <?php if ($download_link): ?>
+      <div class="islandora-download islandora-video-download">
+        <?php print $download_link; ?>
+      </div>
+    <?php endif; ?>
   </div>
   <div class="islandora-video-metadata">
     <?php print $description; ?>
