@@ -183,6 +183,7 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
   $object_pid = $object->id;
 
   $expressions = $object->relationships->get(ISLANDORA_ETHNOGRAPHY_FRBROO, 'R3_is_realised_in');
+  $expressions += $object->relationships->get(ISLANDORA_ETHNOGRAPHY_FRBROO, 'R3_is_realised_in');
   if ($expressions) {
     $variables['notation'] = array();
     foreach ($expressions as $expression) {

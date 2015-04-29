@@ -46,5 +46,74 @@ function islandora_ethnography_deliver_datastream(FedoraObject $object, $dsid) {
     echo $string;
     //drupal_exit();
   }
+}
 
+/**
+ * Returns array of items to autocomplete forms.
+ *
+ * @param string $type
+ *   Selects eithe Scholar or Department
+ *
+ * @return array
+ *   array of all candidates
+ */
+function islandora_ethnography_autocomplete($type) {
+
+  $mappings = array(
+    'person' => array(
+      'cmodel' => 'islandora:personCModel',
+      'title' => 'mads_authority_titleInfo_title_s',
+    ),
+    'group' => array(
+      'cmodel' => 'islandora:organizationCModel',
+      'title' => 'fgs_label_et',
+    ),
+    'general' => array(
+      'cmodel' => 'islandora:personCModel',
+      'title' => 'fgs_label_et',
+    ),
+    'tune' => array(
+      'cmodel' => 'islandora:BDHTuneCModel',
+      'title' => 'fgs_label_et',
+    ),
+    'story' => array(
+      'cmodel' => 'islandora:storyCModel',
+      'title' => 'fgs_label_et',
+    ),
+    'image' => array(
+      'cmodel' => 'islandora:storyCModel',
+      'title' => 'fgs_label_et',
+    ),
+  );
+  $qualifier = $mappings[$type]['title'] . ':*';
+  $path = request_path();
+  if ($path) {
+    $path_array = explode('/', $path);
+    $stub = end($path_array);
+    $qualifier = $mappings[$type]['title'] . ':' . $stub . '*';
+  }
+  $params = array(
+    'fl' => array($mappings[$type]['title'], 'PID'),
+  );
+  $query = "$qualifier AND " . 'RELS_EXT_hasModel_uri_mt:"' . $mappings[$type]['cmodel'] . '"';
+  //print_r($query);
+  $url = parse_url(variable_get('islandora_solr_url', 'localhost:8080/solr'));
+  $solr = new Apache_Solr_Service($url['host'], $url['port'], $url['path'] . '/');
+  $solr->setCreateDocuments(FALSE);
+  try {
+    $results = $solr->search($query, 0, 1000, $params);
+    $json = json_decode($results->getRawResponse(), TRUE);
+  }
+  catch (Exception $e) {
+    watchdog_exception('Islandora Entities', $e, 'Got an exception while searching entities for callback.', array(), WATCHDOG_ERROR);
+  }
+
+  $list = array();
+  foreach ($json['response']['docs'] as $choice) {
+    if (isset($choice[$mappings[$type]['title']])) {
+      $list[$choice['PID']] = $choice[$mappings[$type]['title']][0];
+    }
+  }
+
+  drupal_json_output($list);
 }
