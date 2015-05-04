@@ -61,26 +61,6 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
  */
 function islandora_ethnography_menu() {
   return array(
-    'islandora/object/%islandora_object_bio/edit_bio' => array(
-      'title' => 'Edit Bio Text',
-      'page callback' => 'islandora_edit_datastream',
-      'page arguments' => array(2),
-      'type' => MENU_LOCAL_TASK,
-      'file' => 'includes/datastream.inc',
-      'file path' => drupal_get_path('module', 'islandora'),
-      'access callback' => 'islandora_datastream_access',
-      'access arguments' => array(ISLANDORA_METADATA_EDIT, 2),
-    ),
-    'islandora/object/%islandora_object_obj/edit_obj' => array(
-      'title' => 'Edit Text',
-      'page callback' => 'islandora_edit_datastream',
-      'page arguments' => array(2),
-      'type' => MENU_LOCAL_TASK,
-      'file' => 'includes/datastream.inc',
-      'file path' => drupal_get_path('module', 'islandora'),
-      'access callback' => 'islandora_ethnography_edit_story',
-      'access arguments' => array(ISLANDORA_METADATA_EDIT, 2),
-    ),
     'islandora/getinfo/%islandora_object/%' => array(
       'title' => 'Get object info',
       'page callback' => 'islandora_ethnography_get_info',
@@ -117,24 +97,6 @@ function islandora_ethnography_flush_caches() {
   return array('cache_islandora_ethnography');
 }
 
-function islandora_object_bio_load($pid) {
-  $object = islandora_object_load($pid);
-  return $object['BIO'];
-}
-
-function islandora_object_obj_load($pid) {
-  $object = islandora_object_load($pid);
-  return $object['OBJ'];
-}
-
-function islandora_ethnography_edit_story($op, $datastream) {
-  if (!in_array('islandora:storyCModel', $datastream->parent->models)) {
-    return FALSE;
-  }
-  else {
-    return islandora_datastream_access($op, $datastream);
-  }
-}
 /**
  * Implements hook_CMODEL_PID_islandora_view_object_alter().
  */
@@ -190,7 +152,7 @@ function islandora_ethnography_islandora_storyCModel_islandora_view_object($obje
 /**
  * Implements hook_CMODEL_PID_islandora_view_object().
  */
-function islandora_audio_bdh_audioSnippetCModel_islandora_view_object($object, $page_number, $page_size) {
+function islandora_ethnography_bdh_audioSnippetCModel_islandora_view_object($object, $page_number, $page_size) {
   $videojs_transcript_path = libraries_get_path("videojs-transcript");
   drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
   drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/transcript.js', array('weight'=>11, 'scope' => 'footer'));
