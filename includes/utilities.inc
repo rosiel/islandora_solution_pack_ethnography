@@ -47,22 +47,9 @@ function islandora_ethnography_replace_ethnography_links($content) {
         $pid_part = explode('#', $pid_part);
         $pid = $pid_part['0'];
         $time = isset($pid_part['1']) ? $pid_part['1'] : NULL;
-        $safe_pid = str_replace(':', '_', $pid);
 
         // Get data about this object, either from cache, or from the object.
-        $data = cache_get($safe_pid, 'cache_islandora_ethnography');
-        if (!$data) {
-          if (!$obj = islandora_object_load($pid)) {
-            continue;
-          }
-          else {
-            $data = islandora_ethnography_get_object_data($obj);
-            cache_set($safe_pid, $data, 'cache_islandora_ethnography');
-          }
-        }
-        else {
-          $data = $data->data;
-        }
+        $data = islandora_ethnography_get_object_data_from_cache($pid);
 
         // If the object has a PROXY_MP3 datastream, trick the link out
         // with classes to make it play in the global audiojs player.
@@ -150,6 +137,29 @@ function islandora_ethnography_replace_ethnography_links($content) {
   }
 
   return $xml->saveHTML();
+}
+
+
+/*
+ * Gets some data about the object based on the pid, from cache if possible.
+ */
+function islandora_ethnography_get_object_data_from_cache($pid) {
+  $safe_pid = str_replace(':', '_', $pid);
+  // Get data about this object, either from cache, or from the object.
+  $data = cache_get($safe_pid, 'cache_islandora_ethnography');
+  if (!$data) {
+    if (!$obj = islandora_object_load($pid)) {
+      continue;
+    }
+    else {
+      $data = islandora_ethnography_get_object_data($obj);
+      cache_set($safe_pid, $data, 'cache_islandora_ethnography');
+    }
+  }
+  else {
+    $data = $data->data;
+  }
+  return $data;
 }
 
 /*
