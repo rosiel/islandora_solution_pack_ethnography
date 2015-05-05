@@ -89,7 +89,19 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
   $tn = $object->relationships->get(NULL, 'hasRepresentativeImage');
   if ($tn) {
     $tn_pid = $tn[0]['object']['value'];
-    $variables['tn'] = "/islandora/object/$tn_pid/datastream/JPG/view";
+    // Find out if that object has a 'JPG' or a 'MEDIUM_SIZE' datastream.
+    $tn_data = islandora_ethnography_get_object_data_from_cache($tn_pid);
+    $variables['tn'] = '';
+    if ($tn_data) {
+      if (in_array('JPG', $tn_data['datastreams'], TRUE)) {
+        $variables['tn'] = "/islandora/object/$tn_pid/datastream/JPG/view";
+      }
+      elseif (in_array('MEDIUM_SIZE', $tn_data['datastreams'], TRUE)) {
+        $variables['tn'] = "/islandora/object/$tn_pid/datastream/MEDIUM_SIZE/view";
+      }
+    }
+
+
     module_load_include('inc', 'islandora_solr_metadata', 'theme/theme');
     $tn_object = new stdClass();
     $tn_object->id = $tn_pid;
