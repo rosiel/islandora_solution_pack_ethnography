@@ -50,6 +50,9 @@ function islandora_ethnography_replace_ethnography_links($content) {
 
         // Get data about this object, either from cache, or from the object.
         $data = islandora_ethnography_get_object_data_from_cache($pid);
+        if (!$data) {
+          continue;
+        }
 
         // If the object has a PROXY_MP3 datastream, trick the link out
         // with classes to make it play in the global audiojs player.
@@ -148,10 +151,7 @@ function islandora_ethnography_get_object_data_from_cache($pid) {
   // Get data about this object, either from cache, or from the object.
   $data = cache_get($safe_pid, 'cache_islandora_ethnography');
   if (!$data) {
-    if (!$obj = islandora_object_load($pid)) {
-      continue;
-    }
-    else {
+    if ($obj = islandora_object_load($pid)) {
       $data = islandora_ethnography_get_object_data($obj);
       cache_set($safe_pid, $data, 'cache_islandora_ethnography');
     }
@@ -436,4 +436,39 @@ function islandora_ethnography_add_autocompletes_to_thesis_form(&$form) {
       $form['granter'][$key]['department']['#autocomplete_path'] = 'islandora/entities/autocomplete/department';
     }
   }
+}
+
+function islandora_ethnography_get_transcript_object(AbstractObject $object) {
+  // do an RI or solr query on cidoc:P130_shows_features_of.
+  $query = <<<EOQ
+PREFIX cidoc: <http://www.cidoc-crm.org/cidoc-crm/>
+SELECT ?pid
+FROM <#ri>
+WHERE {
+  ?pid <cidoc:P130_shows_features_of> <info:fedora/{$object->id}> ;
+       <fedora-model:hasModel> <info:fedora/bdh:transcriptionCModel> ;
+       <fedora-model:state> <fedora-model:Active> .
+}
+EOQ;
+  $results = $object->repository->ri->sparqlQuery($query);
+
+  // Get rid of the "extra" info...
+  $map = function($o) {
+    foreach ($o as $key => &$info) {
+      $info = $info['value'];
+    }
+
+    $o = array_filter($o);
+
+    return $o;
+  };
+  $pages = array_map($map, $results);
+
+  // Grab the PIDs...
+  $get_pid = function($o) {
+    return $o['pid'];
+  };
+  $pids = array_map($get_pid, $pages);
+
+  return $pids;
 }

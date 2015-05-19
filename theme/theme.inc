@@ -335,3 +335,17 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
 
   return array('' => $viewer);
 }
+
+function islandora_ethnography_preprocess_islandora_ethnography_transcript_block(array &$variables) {
+  module_load_include('inc', 'islandora_ethnography', 'includes/utilities');
+  // get the transcript object.
+
+  $object = $variables['object'];
+  $transcript_pids = islandora_ethnography_get_transcript_object($object);
+  foreach($transcript_pids as $pid) {
+    $transcript_object = islandora_object_load($pid);
+    $content = html_entity_decode($transcript_object['HTML']->content);
+  }
+  $variables['content'] = islandora_ethnography_replace_ethnography_links($content); // might as well leave this here if we want to do cool stuff with entity recog/manual additions in the future.
+  $variables['block_title'] = t('Transcript');
+}

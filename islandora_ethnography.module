@@ -53,6 +53,12 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
       'pattern' => 'islandora_video__',
       'variables' => array('object' => NULL),
     ),
+    'islandora_ethnography_transcript_block' => array(
+      'file' => 'theme/theme.inc',
+      'template' => 'theme/islandora-eth-transcript-block',
+      'pattern' => 'islandora_eth_transcript_block__',
+      'variables' => array('object' => NULL),
+    ),
   );
 }
 
@@ -158,8 +164,15 @@ function islandora_ethnography_bdh_audioSnippetCModel_islandora_view_object($obj
   drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/transcript.js', array('weight'=>11, 'scope' => 'footer'));
   drupal_add_css($videojs_transcript_path . '/css/videojs-transcript.css');
 
-  $output = theme('islandora_audio', array('islandora_object' => $object));
-  return array('' => $output);
+  $player = theme('islandora_audio', array('islandora_object' => $object));
+
+  // Get transcript
+  $transcript = theme('islandora_ethnography_transcript_block', array('object' => $object));
+  $output = array(
+    'transcript' => $transcript,
+    'zplayer' => $player,
+  );
+  return $output;
 }
 /**
  * Implements hook_CMODEL_PID_islandora_view_object().
@@ -469,3 +482,5 @@ function islandora_ethnography_islandora_datastream_modified(AbstractObject $obj
 
   }
 }
+
+
