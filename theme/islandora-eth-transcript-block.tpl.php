@@ -11,6 +11,11 @@
     <?php if (isset($variables['block_title'])): ?>
       <h2><?php print $variables['block_title']; ?></h2>
     <?php endif; ?>
+    <?php if (isset($variables['edit_link'])): ?>
+      <div>
+        <?php print $variables['edit_link']; ?>
+      </div>
+    <?php endif; ?>
     <?php if (isset($variables['content'])): ?>
       <?php print $variables['content']; ?>
     <?php endif; ?>

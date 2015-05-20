@@ -348,4 +348,6 @@ function islandora_ethnography_preprocess_islandora_ethnography_transcript_block
   }
   $variables['content'] = islandora_ethnography_replace_ethnography_links($content); // might as well leave this here if we want to do cool stuff with entity recog/manual additions in the future.
   $variables['block_title'] = t('Transcript');
+  $edit_access = islandora_object_manage_access_callback(array(ISLANDORA_METADATA_EDIT), $transcript_object);
+  $variables['edit_link'] = $edit_access ? l(t('Edit transcript'), url("islandora/object/{$transcript_object->id}/datastream/HTML/edit")) : '';
 }
