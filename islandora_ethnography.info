@@ -5,5 +5,7 @@ dependencies[] = islandora_basic_collection
 dependencies[] = islandora_solr
 dependencies[] = islandora_solr_metadata
 dependencies[] = islandora_entities
+dependencies[] = islandora_solution_pack_audio
+
 package = Islandora Solution Packs
 core = 7.x

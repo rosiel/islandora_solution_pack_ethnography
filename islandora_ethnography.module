@@ -483,4 +483,29 @@ function islandora_ethnography_islandora_datastream_modified(AbstractObject $obj
   }
 }
 
+/**
+ * Implements hook_CMODEL_PID_islandora_derivative().
+ */
+function islandora_ethnography_bdh_audioSnippetCModel_islandora_derivative() {
+  return array(
+    array(
+      'source_dsid' => 'OBJ',
+      'destination_dsid' => 'PROXY_MP3',
+      'weight' => '0',
+      'function' => array(
+        'islandora_audio_create_mp3',
+      ),
+      'file' => drupal_get_path('module', 'islandora_audio') . '/includes/derivatives.inc',
+    ),
+    array(
+      'source_dsid' => NULL,
+      'destination_dsid' => 'TN',
+      'weight' => 1,
+      'function' => array(
+        'islandora_audio_create_thumbnail',
+      ),
+      'file' => drupal_get_path('module', 'islandora_audio') . '/includes/derivatives.inc',
+    ),
+  );
+}
 
