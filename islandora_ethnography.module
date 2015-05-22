@@ -509,3 +509,17 @@ function islandora_ethnography_bdh_audioSnippetCModel_islandora_derivative() {
   );
 }
 
+/**
+ * Implements hook_islandora_ingest_steps().
+ */
+function islandora_ethnography_bdh_audioSnippetCModel_islandora_ingest_steps() {
+  return array(
+    'islandora_ethnography_audio_upload' => array(
+      'weight' => 10,
+      'type' => 'form',
+      'form_id' => 'islandora_audio_audio_upload_form',
+      'module' => 'islandora_audio',
+      'file' => 'includes/audio_upload.form.inc',
+    ),
+  );
+}
