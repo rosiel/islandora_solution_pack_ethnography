@@ -342,6 +342,9 @@ function islandora_ethnography_preprocess_islandora_ethnography_transcript_block
 
   $object = $variables['object'];
   $transcript_pids = islandora_ethnography_get_transcript_object($object);
+  if (!$transcript_pids) {
+    return;
+  }
   foreach($transcript_pids as $pid) {
     $transcript_object = islandora_object_load($pid);
     $content = html_entity_decode($transcript_object['HTML']->content);
