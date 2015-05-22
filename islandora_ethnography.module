@@ -394,14 +394,30 @@ function islandora_ethnography_notation_block() {
  */
 function islandora_ethnography_preprocess_islandora_audio(&$variables) {
   $islandora_object = $variables['islandora_object'];
-  if (isset($islandora_object['PROXY_MP3']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['PROXY_MP3'])) {
-    $audio_url = url("islandora/object/{$islandora_object->id}/datastream/PROXY_MP3/download", array('absolute' => TRUE));
-    $variables['islandora_content'] .= l(t('Download MP3 '), $audio_url, array('html' => TRUE));
-  }
+  $wav_mimes = array('audio/vnd.wave', 'audio/wav', 'audio/wave', 'audio/x-wav');
+  $mp3_mimes = array('audio/mpeg', 'audio/mp3');
+  $found_wav = FALSE;
+  // Test if OBJ is present
   if (isset($islandora_object['OBJ']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['OBJ'])) {
     $audio_url = url("islandora/object/{$islandora_object->id}/datastream/OBJ/download", array('absolute' => TRUE));
-    $variables['islandora_content'] .= l(t(' Download WAV'), $audio_url, array('html' => TRUE));
+    // If it's a WAV file, offer a Download WAV option.
+    if (in_array($islandora_object['OBJ']->mimetype, $wav_mimes)) {
+      $variables['islandora_content'] .= l(t(' Download WAV'), $audio_url, array('html' => TRUE));
+      $found_wav = TRUE;
+    }
+    // Otherwise offer the download of the OBJ file if it's an MP3.
+    if (in_array($islandora_object['OBJ']->mimetype, $mp3_mimes)) {
+      $variables['islandora_content'] .= l(t(' Download MP3'), $audio_url, array('html' => TRUE));
+    }
   }
+  // If the OBJ is a wav, allow the PROXY_MP3 download as a light-weight option.
+  if ($found_wav) {
+    if (isset($islandora_object['PROXY_MP3']) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $islandora_object['PROXY_MP3'])) {
+      $audio_url = url("islandora/object/{$islandora_object->id}/datastream/PROXY_MP3/download", array('absolute' => TRUE));
+      $variables['islandora_content'] .= l(t('Download MP3 '), $audio_url, array('html' => TRUE));
+    }
+  }
+
 }
 
 function islandora_ethnography_remove_format($form, &$form_state) {
