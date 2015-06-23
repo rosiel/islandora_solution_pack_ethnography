@@ -62,7 +62,7 @@ function islandora_ethnography_autocomplete($type) {
   $mappings = array(
     'person' => array(
       'cmodel' => 'islandora:personCModel',
-      'title' => 'mads_authority_titleInfo_title_s',
+      'title' => 'mads_authority_titleInfo_title_et',
     ),
     'group' => array(
       'cmodel' => 'islandora:organizationCModel',

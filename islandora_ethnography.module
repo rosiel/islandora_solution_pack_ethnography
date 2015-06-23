@@ -93,6 +93,13 @@ function islandora_ethnography_menu() {
       'file' => 'includes/callbacks.inc',
       'access arguments' => array('search islandora solr'),
     ),
+    'islandora/ethnography/ajax' => array(
+      'title' => 'Ethnography Ajax',
+      'page callback' => 'islandora_ethnography_ajax_callback',
+      'page arguments' => array(3),
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('search islandora solr'),
+    ),
   );
 }
 
@@ -111,18 +118,18 @@ function islandora_ethnography_islandora_organizationCModel_islandora_view_objec
 }
 
 /**
- * Implements hook_CMODEL_PID_islandora_view_object_alter().
- */
-function islandora_ethnography_islandora_personCModel_islandora_view_object_alter(&$object, &$rendered) {
-  unset($rendered['']);
-}
-
-/**
  * Implements hook_CMODEL_PID_islandora_view_object().
  */
 function islandora_ethnography_islandora_personCModel_islandora_view_object($object, $page_number, $page_size) {
   $output = theme('islandora_person_ethnography', array('object' => $object));
   return array('islandora_ethnography' => $output);
+}
+
+/**
+ * Implements hook_CMODEL_PID_islandora_view_object_alter().
+ */
+function islandora_ethnography_islandora_personCModel_islandora_view_object_alter(&$object, &$rendered) {
+  unset($rendered['']);
 }
 
 /**
@@ -475,6 +482,24 @@ function islandora_ethnography_form_alter(&$form, &$form_state, $form_id) {
     $form['subject']['#default_value'] = t('Feedback for the page "!title" on Bowing Down Home', array('!title' => $page['title']));
     array_unshift($form['#validate'], 'islandora_ethnography_contact_form_validate');
   }
+  if (isset($form_state['build_info']['args'][0])) {
+    // LIST OF FORMS HERE
+    $my_forms = array(
+      'stupid form',
+      'BDH MODS audio test form',
+    );
+    if (in_array($form_state['build_info']['args'][0], $my_forms)) {
+      // Set name->namePart's.
+      foreach(element_children($form['name']) as $key => $nameset) {
+        $form['name'][$key]['namePart']['#prefix'] = "<div id='name_namePart_$key'>";
+        $form['name'][$key]['namePart']['#suffix'] = "</div>";
+        $form['name'][$key]['pid']['#ajax'] = array(
+          'callback' => 'islandora_ethnography_ajax_callback',
+          'wrapper' => "name_namePart_$key",
+        );
+      }
+    }
+  }
 
 }
 
@@ -539,3 +564,26 @@ function islandora_ethnography_bdh_audioSnippetCModel_islandora_ingest_steps() {
     ),
   );
 }
+
+function islandora_ethnography_ajax_callback(&$form, &$form_state) {
+  module_load_include('inc', 'islandora_ethnography', 'includes/utilities');
+  $trigger = $form_state['triggering_element'];
+  $parents = $$trigger['#parents'];
+  array_pop($parents);
+  $f = $form;
+  foreach ($parents as $name) {
+    $f = $f[$name];
+  }
+  $parent = $f;
+
+  $pid = $trigger['#value'];
+  $data = islandora_ethnography_get_object_data_from_cache($pid);
+  $form['name']['namePart']['#return_value'] = $data['label'];
+  $form['name']['namePart']['#value'] = $data['label'];
+  return $form['name']['namePart'];
+}
+
+// It's possible that the ajax code *could* have gone into pre-render,
+// after_build, or process, but even in hook_form_alter, adding the
+// #ajax element seems to do nothing.
+// YOu can't have #ajax if you also have #process. not sure if the others harm either.

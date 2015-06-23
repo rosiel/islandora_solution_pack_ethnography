@@ -1,0 +1,4 @@
+.tipped-tooltip .tipped-title::after{
+    content: "<br />";
+
+}

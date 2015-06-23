@@ -27,12 +27,19 @@
 function islandora_ethnography_replace_ethnography_links($content) {
   module_load_include('inc', 'islandora', 'includes/utilities');
   module_load_include('inc', 'islandora', 'includes/solution_packs');
+
   $xml = new DOMDocument();
   $content = preg_replace('/&(?!#?[a-z0-9]+;)/', '&amp;', $content);
   if (!$xml->loadHTML($content)) {
     print ("Unable to load HTML.");
   }
   else {
+    // Add tooltip code for Tipped.js
+    $tipped_path = libraries_get_path("tipped");
+    drupal_add_js($tipped_path . '/js/tipped/tipped.js', array('weight' => 10));
+    drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/tipped.js', array('weight'=>11, 'scope' => 'footer'));
+    drupal_add_css($tipped_path . '/css/tipped/tipped.css');
+
     foreach ($xml->getElementsByTagName('a') as $link) {
       $classes = explode(' ', $link->getAttribute('class'));
       $target = $link->getAttribute('href');
@@ -46,6 +53,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
         $pid_part = arg(2, $target);
         $pid_part = explode('#', $pid_part);
         $pid = $pid_part['0'];
+        $escaped_pid = str_replace(array(':','/','_'), '-', $pid);
         $time = isset($pid_part['1']) ? $pid_part['1'] : NULL;
 
         // Get data about this object, either from cache, or from the object.
@@ -61,6 +69,24 @@ function islandora_ethnography_replace_ethnography_links($content) {
           $classes[] = 'silent';
           $link->setAttribute('class', implode(' ', $classes));
           $link->setAttribute('data-source', '/islandora/object/' . $pid . '/datastream/PROXY_MP3');
+          // And also give it a tooltip with a link to the transcript.
+          $link->setAttribute('data-tipped-options', "inline: 'ethno-link-tooltip-$escaped_pid'");
+          // Create the tooltip div
+          $tooltip = $xml->createElement('span');
+          $tooltip->setAttribute('id', "ethno-link-tooltip-$escaped_pid");
+          $tooltip->setAttribute('style', 'display:none');
+          $tooltip->setAttribute('class', 'tipped-tooltip');
+          $tooltip_title = $xml->createElement('span', $data['label']);
+          $tooltip_title->setAttribute('class', 'tipped-title');
+          $tooltip_break = $xml->createElement('br');
+          $tooltip_text = $xml->createElement('a', t('Read Transcript'));
+          $tooltip_text->setAttribute('href', '/'.$target);
+          $tooltip_text->setAttribute('target', 'blank');
+          $tooltip->appendChild($tooltip_title);
+          $tooltip->appendChild($tooltip_break);
+          $tooltip->appendChild($tooltip_text);
+          $link->parentNode->insertBefore($tooltip);
+
         }
 
         if (in_array('PROXY_MP4', $data['datastreams'], TRUE)) {
@@ -145,6 +171,11 @@ function islandora_ethnography_replace_ethnography_links($content) {
 
 /*
  * Gets some data about the object based on the pid, from cache if possible.
+ * Returns $data which is an array,
+ *   'label'  (object label)
+ *   'models' (array of content models)
+ *   'datastreams' (array of datastream IDs)
+ *   'proxy_mp4' (url of the proxy mp4 datastream)
  */
 function islandora_ethnography_get_object_data_from_cache($pid) {
   $safe_pid = str_replace(':', '_', $pid);
