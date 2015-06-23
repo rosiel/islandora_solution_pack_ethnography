@@ -70,18 +70,25 @@ function islandora_ethnography_replace_ethnography_links($content) {
           $link->setAttribute('class', implode(' ', $classes));
           $link->setAttribute('data-source', '/islandora/object/' . $pid . '/datastream/PROXY_MP3');
           // And also give it a tooltip with a link to the transcript.
+          if (!empty($data['transcripts'])) {
+            $link_text = t("Read transcript");
+          } else {
+            $link_text = t("More info");
+          }
           $link->setAttribute('data-tipped-options', "inline: 'ethno-link-tooltip-$escaped_pid'");
-          // Create the tooltip div
+          // Create the tooltip span (divs show by default with our css).
           $tooltip = $xml->createElement('span');
           $tooltip->setAttribute('id', "ethno-link-tooltip-$escaped_pid");
           $tooltip->setAttribute('style', 'display:none');
           $tooltip->setAttribute('class', 'tipped-tooltip');
+          // Create the tooltip content.
           $tooltip_title = $xml->createElement('span', $data['label']);
           $tooltip_title->setAttribute('class', 'tipped-title');
           $tooltip_break = $xml->createElement('br');
-          $tooltip_text = $xml->createElement('a', t('Read Transcript'));
+          $tooltip_text = $xml->createElement('a', $link_text);
           $tooltip_text->setAttribute('href', '/'.$target);
           $tooltip_text->setAttribute('target', 'blank');
+          // Attach the elements.
           $tooltip->appendChild($tooltip_title);
           $tooltip->appendChild($tooltip_break);
           $tooltip->appendChild($tooltip_text);
@@ -202,6 +209,7 @@ function islandora_ethnography_get_object_data(AbstractObject $object) {
     'models' => array(),
     'proxy_mp4' => NULL,
     'label' => '',
+    'transcripts' => array(),
   );
 
   foreach($object->models as $model) {
@@ -214,7 +222,28 @@ function islandora_ethnography_get_object_data(AbstractObject $object) {
   if ($object['PROXY_MP4']) {
     $data['proxy_mp4'] = $object['PROXY_MP4']->url;
   }
-
+  // Get transcripts from Solr.
+  $params = array(
+    'fl' => array('PID'),
+  );
+  $query = "RELS_EXT_P130_shows_features_of_uri_ms:\"info:fedora/{$object->id}\"";
+  $url = parse_url(variable_get('islandora_solr_url', 'localhost:8080/solr'));
+  $solr = new Apache_Solr_Service($url['host'], $url['port'], $url['path'] . '/');
+  $solr->setCreateDocuments(FALSE);
+  try {
+    $results = $solr->search($query, 0, 1000, $params);
+    $json = json_decode($results->getRawResponse(), TRUE);
+  }
+  catch (Exception $e) {
+    watchdog_exception('Islandora Ethnography', $e, 'Got an exception while searching for transcript.', array(), WATCHDOG_ERROR);
+  }
+  $transcripts = array();
+  foreach ($json['response']['docs'] as $transcript) {
+    if (isset($transcript['PID'])) {
+        $transcripts[] = $transcript['PID'];
+    }
+  }
+  $data['transcripts'] = $transcripts;
   return $data;
 
 }
