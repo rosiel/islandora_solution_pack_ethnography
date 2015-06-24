@@ -488,7 +488,7 @@ function islandora_ethnography_form_alter(&$form, &$form_state, $form_id) {
       'stupid form',
       'BDH MODS audio test form',
     );
-    if (in_array($form_state['build_info']['args'][0], $my_forms)) {
+    if (in_array($form_state['build_info']['args'][0], $my_forms)) { // NOTE TO ROSIE: This is not available in the hook_xml_form_builder_get_form_modify_definition_alter
       // Set name->namePart's.
       foreach(element_children($form['name']) as $key => $nameset) {
         $form['name'][$key]['namePart']['#prefix'] = "<div id='name_namePart_$key'>";
@@ -587,3 +587,21 @@ function islandora_ethnography_ajax_callback(&$form, &$form_state) {
 // after_build, or process, but even in hook_form_alter, adding the
 // #ajax element seems to do nothing.
 // YOu can't have #ajax if you also have #process. not sure if the others harm either.
+
+
+/*
+ * Fill a the 'title' field with the object label.
+ */
+
+function islandora_ethnography_xml_form_builder_get_form_modify_definition_alter (&$form, &$form_state) {
+  if (isset($form_state['association'])) {
+    if ($form_state['association']['form_name'] == "HTML Editor for Stories") {
+      if (isset($form_state['build_info']['args'])) {
+        if (is_a($form_state['build_info']['args'][0], 'IslandoraFedoraObject')) {
+          $label = $form_state['build_info']['args'][0]->label;
+          $form['title']['#default_value'] = $label;
+        }
+      }
+    }
+  }
+}
