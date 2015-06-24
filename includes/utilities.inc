@@ -87,7 +87,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
           $tooltip_break = $xml->createElement('br');
           $tooltip_text = $xml->createElement('a', $link_text);
           $tooltip_text->setAttribute('href', '/'.$target);
-          $tooltip_text->setAttribute('target', 'blank');
+          $tooltip_text->setAttribute('target', '_blank');
           // Attach the elements.
           $tooltip->appendChild($tooltip_title);
           $tooltip->appendChild($tooltip_break);
