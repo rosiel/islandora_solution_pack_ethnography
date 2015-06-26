@@ -40,6 +40,10 @@ function islandora_ethnography_replace_ethnography_links($content) {
     drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/tipped.js', array('weight'=>11, 'scope' => 'footer'));
     drupal_add_css($tipped_path . '/css/tipped/tipped.css');
 
+    if (strpos($content, 'show-text-en') !== FALSE) {
+      drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/languageSwitcher.js');
+    }
+
     foreach ($xml->getElementsByTagName('a') as $link) {
       $classes = explode(' ', $link->getAttribute('class'));
       $target = $link->getAttribute('href');
