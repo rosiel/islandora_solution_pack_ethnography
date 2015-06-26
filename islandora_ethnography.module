@@ -605,3 +605,13 @@ function islandora_ethnography_xml_form_builder_get_form_modify_definition_alter
     }
   }
 }
+
+/*
+ * Implements hook_cmodel_pid_islandora_ingest_steps_alter().
+ *
+ * Disable Thumbnail upload for entities.
+ */
+
+function islandora_ethnography_islandora_personCModel_islandora_ingest_steps_alter(array &$steps, array &$form_state) {
+  unset($steps['islandora_entities_tn_file_upload']);
+}
