@@ -280,6 +280,7 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   $variables['description'] = islandora_retrieve_description_markup($object);
 
   $viewer_dsid = 'PROXY_MP4';
+  $viewer_dsid = 'DONTUSEWOWZA';
   $viewer_dsid_backup = 'OBJ';
 
   $mime = 'rtmp/mp4';

@@ -127,14 +127,12 @@ function islandora_ethnography_replace_ethnography_links($content) {
           );
 
           // Add OBJ source. Or don't to force streaming.
-          /*
           if (in_array('OBJ', $data['datastreams'])) {
             $vars['items'][] = array(
               'uri' => '/islandora/object/' . $pid . '/datastream/OBJ/view',
               'filemime' => 'video/mp4',
             );
           }
-          */
 
           // Add Thumbnail.
           if (in_array('TN', $data['datastreams'])) {
