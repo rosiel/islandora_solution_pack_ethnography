@@ -500,7 +500,6 @@ function islandora_ethnography_form_alter(&$form, &$form_state, $form_id) {
       }
     }
   }
-
 }
 
 /**
@@ -614,4 +613,26 @@ function islandora_ethnography_xml_form_builder_get_form_modify_definition_alter
 
 function islandora_ethnography_islandora_personCModel_islandora_ingest_steps_alter(array &$steps, array &$form_state) {
   unset($steps['islandora_entities_tn_file_upload']);
+  foreach ($steps['xml_form_builder_association_step']['args'][0] as $key => $association) {
+    if ($association['form_name'] == "HTML Editor" OR $association['form_name'] == "Person EAC-CPF form") {
+      unset($steps['xml_form_builder_association_step']['args'][0][$key]);
+    }
+  }
+}
+
+function islandora_ethnography_get_foo($stuff, $form_state) {
+  $a = 3;
+  return $stuff['titleInfo']['title'];
+}
+
+function islandora_ethnography_node_view_alter(&$build) {
+  if ($build['#bundle'] == 'node') {
+    $build['body']['#post_render'][] = 'islandora_ethnography_process_islandora_links';
+  }
+}
+
+
+function islandora_ethnography_process_islandora_links($content) {
+  module_load_include('inc', 'islandora_ethnography', 'includes/utilities');
+  return islandora_ethnography_replace_ethnography_links($content);
 }
