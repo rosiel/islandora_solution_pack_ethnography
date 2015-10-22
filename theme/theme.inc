@@ -331,7 +331,7 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   $viewer = islandora_get_viewer($video_params, 'islandora_video_viewers', $object);
   $variables['islandora_content'] = '';
   if (isset($object['OBJ'])) {
-    $download_url = url('islandora/object/' . $object->id . '/datastream/OBJ/view', array('absolute' => TRUE));
+    $download_url = url('islandora/object/' . $object->id . '/datastream/OBJ/download', array('absolute' => TRUE));
     $variables['download_link'] = l(t('Download MP4'), $download_url);
   }
   if ($viewer) {
