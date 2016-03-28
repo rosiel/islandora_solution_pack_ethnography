@@ -626,7 +626,7 @@ function islandora_ethnography_get_foo($stuff, $form_state) {
 }
 
 function islandora_ethnography_node_view_alter(&$build) {
-  if ($build['#bundle'] == 'node') {
+  if ($build['#bundle'] == 'node' OR $build['#bundle'] == 'article') {
     $build['body']['#post_render'][] = 'islandora_ethnography_process_islandora_links';
   }
 }

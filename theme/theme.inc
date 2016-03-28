@@ -363,4 +363,3 @@ function islandora_ethnography_preprocess_islandora_ethnography_transcript_block
   $edit_access = islandora_object_manage_access_callback(array(ISLANDORA_METADATA_EDIT), $transcript_object);
   $variables['edit_link'] = $edit_access ? l(t('Edit transcript'), url("islandora/object/{$transcript_object->id}/datastream/HTML/edit")) : '';
 }
-

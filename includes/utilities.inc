@@ -55,6 +55,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
       // Only rewrite links with the class 'ethnography-link'. FIXME?
       if (in_array('ethnography-link', $classes)) {
         $pid_part = arg(2, $target);
+        $pid_part = str_replace('%3A', ':', $pid_part);
         $pid_part = explode('#', $pid_part);
         $pid = $pid_part['0'];
         $escaped_pid = str_replace(array(':','/','_'), '-', $pid);
@@ -69,10 +70,10 @@ function islandora_ethnography_replace_ethnography_links($content) {
         // If the object has a PROXY_MP3 datastream, trick the link out
         // with classes to make it play in the global audiojs player.
         if (in_array('PROXY_MP3', $data['datastreams'], TRUE)) {
-          $classes[] = 'audiojs-global-link';
+          $classes[] = 'gsm2-playable-link';
           $classes[] = 'silent';
           $link->setAttribute('class', implode(' ', $classes));
-          $link->setAttribute('data-source', '/islandora/object/' . $pid . '/datastream/PROXY_MP3');
+          $link->setAttribute('data-source', '/islandora/object/' . $pid . '/datastream/PROXY_MP3/view.mp3');
           // And also give it a tooltip with a link to the transcript.
           if (!empty($data['transcripts'])) {
             $link_text = t("Read transcript");
