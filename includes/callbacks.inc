@@ -62,27 +62,27 @@ function islandora_ethnography_autocomplete($type) {
   $mappings = array(
     'person' => array(
       'cmodel' => 'islandora:personCModel',
-      'title' => 'mads_authority_titleInfo_title_et',
+      'title' => 'mads_authority_titleInfo_title_mt',
     ),
     'group' => array(
       'cmodel' => 'islandora:organizationCModel',
-      'title' => 'fgs_label_et',
+      'title' => 'fgs_label_mt',
     ),
     'general' => array(
       'cmodel' => 'islandora:personCModel',
-      'title' => 'fgs_label_et',
+      'title' => 'fgs_label_mt',
     ),
     'tune' => array(
       'cmodel' => 'islandora:BDHTuneCModel',
-      'title' => 'fgs_label_et',
+      'title' => 'fgs_label_mt',
     ),
     'story' => array(
       'cmodel' => 'islandora:storyCModel',
-      'title' => 'fgs_label_et',
+      'title' => 'fgs_label_mt',
     ),
     'image' => array(
       'cmodel' => 'islandora:storyCModel',
-      'title' => 'fgs_label_et',
+      'title' => 'fgs_label_mt',
     ),
   );
   $qualifier = $mappings[$type]['title'] . ':*';
