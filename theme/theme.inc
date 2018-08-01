@@ -239,8 +239,13 @@ function islandora_ethnography_preprocess_islandora_notation_ethnography(array &
 function islandora_ethnography_preprocess_islandora_story_ethnography(array &$variables) {
   module_load_include('inc', 'islandora_ethnography', 'includes/utilities');
   $object = $variables['object'];
-  $content = html_entity_decode($object['OBJ']->content);
-  $variables['content'] = islandora_ethnography_replace_ethnography_links($content);
+  if (isset($object['OBJ'])) {
+    $content = html_entity_decode($object['OBJ']->content);
+    $variables['content'] = islandora_ethnography_replace_ethnography_links($content);
+  }
+  else {
+    $variables['content'] = "";
+  }
 }
 
 /**

@@ -31,7 +31,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
   $xml = new DOMDocument();
   $content = preg_replace('/&(?!#?[a-z0-9]+;)/', '&amp;', $content);
   if (!$xml->loadHTML($content)) {
-    print ("Unable to load HTML.");
+    watchdog("Islandora Ethnography", "Unable to load HTML.");
   }
   else {
     // Add tooltip code for Tipped.js
