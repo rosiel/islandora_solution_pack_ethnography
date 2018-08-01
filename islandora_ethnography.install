@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * Implements hook_install().
+ *
+ * @see hook_islandora_required_objects()
+ */
+function islandora_ethnography_install() {
+  module_load_include('inc', 'islandora', 'includes/solution_packs');
+  islandora_install_solution_pack('islandora_ethnography');
+}
+
+/**
  * Implements hook_schema().
  */
 function islandora_ethnography_schema() {

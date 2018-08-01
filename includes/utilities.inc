@@ -328,7 +328,7 @@ function islandora_ethnography_solr_search_entities($content_model, $entities_qu
  * @param AbstractObject $islandora_object
  *   The object to add the DS composite datastream to.
  */
-function islandora_ethnography_ingest__entity_ds_composite_datastream(AbstractObject $islandora_object) {
+function foo_islandora_ethnography_ingest__entity_ds_composite_datastream(AbstractObject $islandora_object) {
   $module_path = drupal_get_path('module', 'islandora_entities');
 
   $ds_composite_datastream = $islandora_object->constructDatastream('DS-COMPOSITE-MODEL', 'X');
