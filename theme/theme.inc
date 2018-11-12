@@ -293,15 +293,15 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
     'pid' => $object->id,
   );
   // Video player.
-  if (isset($object[$viewer_dsid]) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$viewer_dsid])) {
-    $video_url = $object[$viewer_dsid]->url;
-    $video_url = str_replace('http:', 'rtmp:', $video_url);
-    $video_params += array(
-      'mime' => $mime,
-      'url' => $video_url,
-    );
-  }
-  elseif (isset($object[$viewer_dsid_backup]) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$viewer_dsid_backup])) {
+//  if (isset($object[$viewer_dsid]) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$viewer_dsid])) {
+//    $video_url = $object[$viewer_dsid]->url;
+//    $video_url = str_replace('http:', 'rtmp:', $video_url);
+//    $video_params += array(
+//      'mime' => $mime,
+//      'url' => $video_url,
+//    );
+//  }
+  if (isset($object[$viewer_dsid_backup]) && islandora_datastream_access(ISLANDORA_VIEW_OBJECTS, $object[$viewer_dsid_backup])) {
     $video_url = url("islandora/object/{$object->id}/datastream/$viewer_dsid_backup/view", array('absolute' => TRUE));
     $video_params += array(
       'mime' => 'video/mp4',
