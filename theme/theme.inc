@@ -230,7 +230,7 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
 function islandora_ethnography_preprocess_islandora_notation_ethnography(array &$variables) {
   module_load_include('inc', 'islandora', 'includes/metadata');
   $variables['metadata'] = islandora_retrieve_metadata_markup($variables['object'], TRUE);
-  $variables['notation'] = theme('islandora_pdfjs', array('fedora_object' => $variables['object']));
+  $variables['notation'] = theme('islandora_pdfjs', array('fedora_object' => $variables['object'], 'dsid' => 'PDF'));
 }
 
 /**
