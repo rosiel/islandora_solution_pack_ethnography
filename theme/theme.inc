@@ -210,7 +210,7 @@ function islandora_ethnography_preprocess_islandora_tune_ethnography(array &$var
     foreach ($expressions as $expression) {
       $expression_obj = islandora_object_load($expression['object']['value']);
       if ($expression_obj) {
-        $variables['notation'][] = theme('islandora_pdfjs', array('fedora_object' => $expression_obj));
+        $variables['notation'][] = theme('islandora_pdfjs', array('fedora_object' => $expression_obj, 'dsid' => 'PDF'));
       }
     }
     $variables['notation'] = implode(' ', $variables['notation']);
