@@ -106,7 +106,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
           // DOES NOT CHECK PERMISSIONS FOR PROXY_MP4
           $source_url = $data['proxy_mp4'];
           $vars = array();
-
+/*
           // Add RTMP source
           $source_url_rtmp = str_replace('http', 'rtmp', $source_url);
           $vars['items'][] = array(
@@ -126,16 +126,16 @@ function islandora_ethnography_replace_ethnography_links($content) {
             'uri' => $source_url_mss,
             'filemime' => 'application/x-silverlight-2',
           );
-
+*/
           // Add OBJ source. Or don't to force streaming.
-          /*
+
           if (in_array('OBJ', $data['datastreams'])) {
             $vars['items'][] = array(
               'uri' => '/islandora/object/' . $pid . '/datastream/OBJ/view',
               'filemime' => 'video/mp4',
             );
           }
-          */
+
 
           // Add Thumbnail.
           if (in_array('TN', $data['datastreams'])) {
