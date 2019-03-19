@@ -588,7 +588,9 @@ function islandora_ethnography_ajax_callback(&$form, &$form_state) {
 
 
 /*
- * Fill a the 'title' field with the object label.
+ * Fill out the 'title' field with the object label. Used so that the datastream
+ * form can have a (mandatory) field to populate the object label (required
+ * for form associations).
  */
 
 function islandora_ethnography_xml_form_builder_get_form_modify_definition_alter (&$form, &$form_state) {
@@ -617,11 +619,6 @@ function islandora_ethnography_islandora_personCModel_islandora_ingest_steps_alt
       unset($steps['xml_form_builder_association_step']['args'][0][$key]);
     }
   }
-}
-
-function islandora_ethnography_get_foo($stuff, $form_state) {
-  $a = 3;
-  return $stuff['titleInfo']['title'];
 }
 
 function islandora_ethnography_node_view_alter(&$build) {

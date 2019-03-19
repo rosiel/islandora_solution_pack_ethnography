@@ -10,11 +10,11 @@
  *
  * This function will scan html text for links to islandora objects
  * that have the class "ethnography-link". (fix: remove condition?)
- * It will add the classes "audiojs-global-link silent" and a
+ * It will add the classes "gsm2-playable-link silent" and a
  * data-source attribute pointing to the audio datastream, currently
  * only PROXY_MP3.
  *
- * This won't do anything alone, but if the audiojs_global module
+ * This won't do anything alone, but if the islandora_global_sm2 module
  * is enabled, these links will play in the global player instead
  * of redirecting to the islandora object.
  *
@@ -68,7 +68,7 @@ function islandora_ethnography_replace_ethnography_links($content) {
         }
 
         // If the object has a PROXY_MP3 datastream, trick the link out
-        // with classes to make it play in the global audiojs player.
+        // with classes to make it play in the global sm2 player.
         if (in_array('PROXY_MP3', $data['datastreams'], TRUE)) {
           $classes[] = 'gsm2-playable-link';
           $classes[] = 'silent';
