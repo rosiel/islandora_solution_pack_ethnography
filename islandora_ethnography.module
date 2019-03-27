@@ -288,7 +288,7 @@ function islandora_ethnography_ingest__ds_composite_datastream(AbstractObject $i
 }
 
 /**
- * Get local thumbnail.
+ * Get local thumbnail. No uses in code.
  */
 function islandora_ethnography_get_default_thumbnail($cmodel) {
   $base_path = drupal_get_path('module', 'islandora_ethnography');

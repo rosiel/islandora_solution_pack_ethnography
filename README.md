@@ -32,7 +32,7 @@ This represents the _concept_ of a musical 'tune', e.g. 'Pigeon on the Gatepost'
 
 ### Notation Content Model `islandora:BDHNotationCModel`
 
-This represents a notated version of a tune. It contains a MODS record, a PDF that can be displayed in the browser, and optionally a .MUS file as the OBJ datastream, and/or a music XML file as the MusicXML datastream. 
+This represents a notated version of a tune. It contains a MODS record, a PDF that can be displayed in the browser, and optionally a .MUS file as the OBJ datastream, and/or a music XML file as the MusicXML datastream.
 
 [A notation object may be related to a tune through the _R3i_realises_ relationship in the RELS-EXT.]
 
@@ -55,14 +55,14 @@ This module overrides the theme for the following objects using `hook_CMODEL_PID
 * islandora:personCModel [Entities Solution Pack]
 * islandora:organizationCModel [Entities Solution Pack]
 
-It provides an autocomplete path, `/islandora/ethnography/autocomplete/[type]`, for types: `person`, `group`, `tune`, `story`, or `image`.  It searches on the fgs_label_mt solr field and returns the object's PID. This is used by the Relationships Editor module. 
+It provides an autocomplete path, `/islandora/ethnography/autocomplete/[type]`, for types: `person`, `group`, `tune`, `story`, or `image`.  It searches on the fgs_label_mt solr field and returns the object's PID. This is used by the Relationships Editor module.
 
 It processes the text that is displays from OBJ datastreams and nodes, to enrich "ethnography links" for various object types:
  * Audio (i.e. has a PROXY_MP3 datastream): links play in the "global" player (on the same page without navigating to the audio object's page). The link to the actual object displays in a tooltip using the Tipped.js library (not included).
  * Video (i.e. has a PROXY_MP4 datastream): replace the link with a videojs player (that plays the OBJ datastream - yes, this is inconsistent).
 
 * Provides default icons (thumbnails) for the "ethnography content types" in solr search results
-* Provides a block, "Islandora Ethnography Expression Of", which can be placed on Object pages. If the current object is a Notation object, it will show the Tune that Notation is an expression of. 
+* Provides a block, "Islandora Ethnography Expression Of", which can be placed on Object pages. If the current object is a Notation object, it will show the Tune that Notation is an expression of.
 * Provides links to download WAV or MP3's of Audio objects that appear on their object pages.
 
 

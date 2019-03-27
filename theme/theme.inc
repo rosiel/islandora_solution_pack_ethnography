@@ -121,11 +121,15 @@ function islandora_ethnography_preprocess_islandora_person_ethnography(array &$v
     );
     $success = islandora_solr_metadata_query_fields($tn_object, $solr_fields);
     if ($success) {
+      $tn_statement = '';
       if (!empty($solr_fields['mods_abstract_s']['value'])) {
-        $variables['tn_copyright'] .= $solr_fields['mods_abstract_s']['value'][0];
+        $tn_statement .= $solr_fields['mods_abstract_s']['value'][0];
       }
       if (!empty($solr_fields['mods_accessCondition_copyright_s']['value'])) {
-        $variables['tn_copyright'] = $solr_fields['mods_accessCondition_copyright_s']['value'][0];
+        $tn_statement .= $solr_fields['mods_accessCondition_copyright_s']['value'][0];
+      }
+      if ($tn_statement != '') {
+        $variables['tn_copyright'] = $tn_statement;
       }
     }
 
