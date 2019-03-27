@@ -264,7 +264,9 @@ function islandora_ethnography_preprocess_islandora_video_ethnography(array &$va
   drupal_add_js('misc/form.js');
   drupal_add_js('misc/collapse.js');
   $videojs_transcript_path = libraries_get_path("videojs-transcript");
-  drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
+  if ($videojs_transcript_path) {
+    drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
+  }
   drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/transcript.js', array('weight'=>11, 'scope' => 'footer'));
   drupal_add_css($videojs_transcript_path . '/css/videojs-transcript2.css');
   $object = $variables['object'];

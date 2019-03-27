@@ -167,10 +167,11 @@ function islandora_ethnography_islandora_storyCModel_islandora_view_object($obje
  */
 function islandora_ethnography_bdh_audioSnippetCModel_islandora_view_object($object, $page_number, $page_size) {
   $videojs_transcript_path = libraries_get_path("videojs-transcript");
-  drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
+  if ($videojs_transcript_path) {
+    drupal_add_js($videojs_transcript_path . '/dist/videojs-transcript.js', array('weight' => 10));
+    drupal_add_css($videojs_transcript_path . '/css/videojs-transcript.css');
+  }
   drupal_add_js(drupal_get_path('module', 'islandora_ethnography') . '/js/transcript.js', array('weight'=>11, 'scope' => 'footer'));
-  drupal_add_css($videojs_transcript_path . '/css/videojs-transcript.css');
-
   $player = theme('islandora_audio', array('islandora_object' => $object));
 
   // Get transcript
