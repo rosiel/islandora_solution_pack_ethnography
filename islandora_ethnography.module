@@ -15,9 +15,45 @@ define('ISLANDORA_ETHNOGRAPHY_VIDEO_SNIPPET_CONTENT_MODEL', 'islandora:videoSnip
 
 
 /**
- * @file
- * Ethnography support for Islandora.
+ * Implements hook_menu().
  */
+function islandora_ethnography_menu() {
+  return array(
+    'islandora/getinfo/%islandora_object/%' => array(
+      'title' => 'Get object info',
+      'page callback' => 'islandora_ethnography_get_info',
+      'page arguments' => array(2,3),
+      'type' => MENU_CALLBACK,
+      'file' => 'includes/callbacks.inc',
+      'access callback' => 'islandora_object_access_callback',
+      'access arguments' => array(ISLANDORA_VIEW_OBJECTS, 2),
+    ),
+    'islandora/object/%islandora_object/rawdatastream/%' => array(
+      'title' => 'Deliver datastream as HTML content',
+      'page callback' => 'islandora_ethnography_deliver_datastream',
+      'page arguments' => array(2,4),
+      'type' => MENU_CALLBACK,
+      'file' => 'includes/callbacks.inc',
+      'access callback' => 'islandora_object_access_callback',
+      'access arguments' => array(ISLANDORA_VIEW_OBJECTS, 2), //FIXME change to view ds permission.
+    ),
+    'islandora/ethnography/autocomplete/%' => array(
+      'title' => 'Ethnography Autocomplete',
+      'page callback' => 'islandora_ethnography_autocomplete',
+      'page arguments' => array(3),
+      'type' => MENU_CALLBACK,
+      'file' => 'includes/callbacks.inc',
+      'access arguments' => array('search islandora solr'),
+    ),
+    'islandora/ethnography/ajax' => array(
+      'title' => 'Ethnography Ajax',
+      'page callback' => 'islandora_ethnography_ajax_callback',
+      'page arguments' => array(3),
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('search islandora solr'),
+    ),
+  );
+}
 
 /**
  * Implements hook_theme().
@@ -65,47 +101,6 @@ function islandora_ethnography_theme($existing, $type, $theme, $path) {
       'template' => 'theme/islandora-eth-transcript-block',
       'pattern' => 'islandora_eth_transcript_block__',
       'variables' => array('object' => NULL),
-    ),
-  );
-}
-
-/**
- * Implements hook_menu().
- */
-function islandora_ethnography_menu() {
-  return array(
-    'islandora/getinfo/%islandora_object/%' => array(
-      'title' => 'Get object info',
-      'page callback' => 'islandora_ethnography_get_info',
-      'page arguments' => array(2,3),
-      'type' => MENU_CALLBACK,
-      'file' => 'includes/callbacks.inc',
-      'access callback' => 'islandora_object_access_callback',
-      'access arguments' => array(ISLANDORA_VIEW_OBJECTS, 2),
-    ),
-    'islandora/object/%islandora_object/rawdatastream/%' => array(
-      'title' => 'Deliver datastream as HTML content',
-      'page callback' => 'islandora_ethnography_deliver_datastream',
-      'page arguments' => array(2,4),
-      'type' => MENU_CALLBACK,
-      'file' => 'includes/callbacks.inc',
-      'access callback' => 'islandora_object_access_callback',
-      'access arguments' => array(ISLANDORA_VIEW_OBJECTS, 2), //FIXME change to view ds permission.
-    ),
-    'islandora/ethnography/autocomplete/%' => array(
-      'title' => 'Ethnography Autocomplete',
-      'page callback' => 'islandora_ethnography_autocomplete',
-      'page arguments' => array(3),
-      'type' => MENU_CALLBACK,
-      'file' => 'includes/callbacks.inc',
-      'access arguments' => array('search islandora solr'),
-    ),
-    'islandora/ethnography/ajax' => array(
-      'title' => 'Ethnography Ajax',
-      'page callback' => 'islandora_ethnography_ajax_callback',
-      'page arguments' => array(3),
-      'type' => MENU_CALLBACK,
-      'access arguments' => array('search islandora solr'),
     ),
   );
 }
