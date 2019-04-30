@@ -77,7 +77,7 @@ function islandora_ethnography_autocomplete($type) {
       'title' => 'fgs_label_mt',
     ),
     'story' => array(
-      'cmodel' => 'islandora:storyCModel',
+      'cmodel' => ISLANDORA_ETHNOGRAPHY_STORY_CONTENT_MODEL,
       'title' => 'fgs_label_mt',
     ),
     'image' => array(

@@ -224,7 +224,7 @@ function islandora_ethnography_islandora_required_objects(IslandoraTuque $connec
   islandora_ethnography_ingest__ds_composite_datastream($notation_content_model, $module_path . "/xml/islandora_notation_ds_composite_model.xml");
   
   // Story Content Model.
-  $story_content_model = $connection->repository->constructObject('islandora:storyCModel');
+  $story_content_model = $connection->repository->constructObject(ISLANDORA_ETHNOGRAPHY_STORY_CONTENT_MODEL);
   $story_content_model->owner = 'fedoraAdmin';
   $story_content_model->label = 'Islandora Story Content Model';
   $story_content_model->models = 'fedora-system:ContentModel-3.0';
@@ -232,7 +232,7 @@ function islandora_ethnography_islandora_required_objects(IslandoraTuque $connec
   islandora_ethnography_ingest__ds_composite_datastream($story_content_model, $module_path . "/xml/islandora_story_ds_composite_model.xml");
   
   // video Content Model.
-  $video_content_model = $connection->repository->constructObject('islandora:videoSnippetCModel');
+  $video_content_model = $connection->repository->constructObject(ISLANDORA_ETHNOGRAPHY_VIDEO_SNIPPET_CONTENT_MODEL);
   $video_content_model->owner = 'fedoraAdmin';
   $video_content_model->label = 'Islandora Video Content Model';
   $video_content_model->models = 'fedora-system:ContentModel-3.0';
