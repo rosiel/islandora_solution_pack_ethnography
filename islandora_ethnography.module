@@ -551,6 +551,41 @@ function islandora_ethnography_bdh_audioSnippetCModel_islandora_derivative() {
 }
 
 /**
+ * Implements hook_xml_form_builder_forms().
+ */
+function islandora_ethnography_xml_form_builder_forms() {
+  $module_path = drupal_get_path('module','islandora_ethnography');
+  return array(
+    'HTML Bio form' => array(
+      'form_file' => "$module_path/xml/HTML_Bio_form.xml",
+    ),
+    'HTML Editor' => array(
+      'form_file' => "$module_path/xml/HTML_Editor.xml",
+    ),
+    'HTML Editor for Stories' => array(
+      'form_file' => "$module_path/xml/HTML_Editor_for_Stories.xml",
+    ),
+  );
+}
+
+/**
+ * Implements hook_xml_form_builder_form_associations().
+ */
+function islandora_ethnography_xml_form_builder_form_associations() {
+  return array(
+    'islandora_story_form' => array(
+      'content_model' => ISLANDORA_ETHNOGRAPHY_STORY_CONTENT_MODEL,
+      'form_name' => 'HTML Editor for Stories',
+      'dsid' => 'OBJ',
+      'title_field' => array('title'),
+      'transform' => 'No Transform',
+      'template' => FALSE,
+    ),
+  );
+}
+
+
+/**
  * Implements hook_islandora_ingest_steps().
  */
 function islandora_ethnography_bdh_audioSnippetCModel_islandora_ingest_steps() {
