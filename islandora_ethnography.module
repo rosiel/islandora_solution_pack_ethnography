@@ -7,6 +7,13 @@
 define('ISLANDORA_ETHNOGRAPHY_CIDOC', 'http://www.cidoc-crm.org/cidoc-crm/');
 define('ISLANDORA_ETHNOGRAPHY_FRBROO', 'http://iflastandards.info/ns/fr/frbr/frbroo/');
 
+// Define Content models.
+define('ISLANDORA_ETHNOGRAPHY_TUNE_CONTENT_MODEL', 'islandora:BDHTuneCModel');
+define('ISLANDORA_ETHNOGRAPHY_NOTATION_CONTENT_MODEL', 'islandora:BDHNotationCModel');
+define('ISLANDORA_ETHNOGRAPHY_STORY_CONTENT_MODEL', 'islandora:storyCModel');
+define('ISLANDORA_ETHNOGRAPHY_VIDEO_SNIPPET_CONTENT_MODEL', 'islandora:videoSnippetCModel');
+
+
 /**
  * @file
  * Ethnography support for Islandora.
@@ -199,12 +206,14 @@ function islandora_ethnography_bdh_videoSnippetCModel_islandora_view_object($obj
 
 /**
  * Implements hook_islandora_required_objects().
+ *
+ * todo: add video and audio snippet cmodels.
  */
 function islandora_ethnography_islandora_required_objects(IslandoraTuque $connection) {
   $module_path = drupal_get_path('module', 'islandora_ethnography');
 
   // Tune Content Model.
-  $tune_content_model = $connection->repository->constructObject('islandora:BDHTuneCModel');
+  $tune_content_model = $connection->repository->constructObject(ISLANDORA_ETHNOGRAPHY_TUNE_CONTENT_MODEL);
   $tune_content_model->owner = 'fedoraAdmin';
   $tune_content_model->label = 'Islandora Tune Work Content Model';
   $tune_content_model->models = 'fedora-system:ContentModel-3.0';
@@ -212,7 +221,7 @@ function islandora_ethnography_islandora_required_objects(IslandoraTuque $connec
   islandora_ethnography_ingest__ds_composite_datastream($tune_content_model, $module_path . "/xml/islandora_tune_ds_composite_model.xml");
 
   // Notation Content Model.
-  $notation_content_model = $connection->repository->constructObject('islandora:BDHNotationCModel');
+  $notation_content_model = $connection->repository->constructObject(ISLANDORA_ETHNOGRAPHY_NOTATION_CONTENT_MODEL);
   $notation_content_model->owner = 'fedoraAdmin';
   $notation_content_model->label = 'Islandora Music Notation Content Model';
   $notation_content_model->models = 'fedora-system:ContentModel-3.0';
@@ -289,7 +298,7 @@ function islandora_ethnography_ingest__ds_composite_datastream(AbstractObject $i
 }
 
 /**
- * Get local thumbnail. No uses in code.
+ * Get path to local thumbnail, used for solr results.
  */
 function islandora_ethnography_get_default_thumbnail($cmodel) {
   $base_path = drupal_get_path('module', 'islandora_ethnography');
@@ -297,10 +306,10 @@ function islandora_ethnography_get_default_thumbnail($cmodel) {
     case 'bdh:audioSnippetCModel':
       return $base_path . '/images/music-snippet.png';
 
-    case 'islandora:BDHTuneCModel':
+    case ISLANDORA_ETHNOGRAPHY_TUNE_CONTENT_MODEL:
       return $base_path . '/images/music-work.png';
 
-    case 'islandora:BDHNotationCModel':
+    case ISLANDORA_ETHNOGRAPHY_NOTATION_CONTENT_MODEL:
       return $base_path . '/images/music-document.png';
 
     case 'islandora:personCModel':
@@ -324,13 +333,13 @@ function islandora_ethnography_bdh_audioSnippetCModel_islandora_solr_object_resu
  * Implements hook_islandora_CMODEL_PID_islandora_solr_object_result_alter().
  */
 function islandora_ethnography_islandora_BDHTuneCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
-  $search_result['thumbnail_url'] = drupal_get_path('module', 'islandora_ethnography') . '/images/music-work.png';
+  $search_result['thumbnail_url'] = islandora_ethnography_get_default_thumbnail(ISLANDORA_ETHNOGRAPHY_TUNE_CONTENT_MODEL);
 }
 /**
  * Implements hook_islandora_CMODEL_PID_islandora_solr_object_result_alter().
  */
 function islandora_ethnography_islandora_BDHNotationCModel_islandora_solr_object_result_alter(&$search_result, $query_processor) {
-  $search_result['thumbnail_url'] = drupal_get_path('module', 'islandora_ethnography') . '/images/music-document.png';
+  $search_result['thumbnail_url'] = islandora_ethnography_get_default_thumbnail(ISLANDORA_ETHNOGRAPHY_NOTATION_CONTENT_MODEL) ;
 }
 
 /**
@@ -378,22 +387,19 @@ function islandora_ethnography_notation_block() {
   $block = array();
   $object = menu_get_object('islandora_object', 2);
   if ($object) {
-    if (in_array('islandora:BDHNotationCModel', $object->models)) {
+    if (in_array(ISLANDORA_ETHNOGRAPHY_NOTATION_CONTENT_MODEL, $object->models)) {
       $block = array();
       $parents = $object->relationships->get('http://iflastandards.info/ns/fr/frbr/frbroo/', 'R3i_realises');
       foreach ($parents as $parent) {
-
         $parent_object = islandora_object_load($parent['object']['value']);
         $block['#markup'] = t('Is notation for the Tune Work !label', array(
           '!label' => l($parent_object->label, 'islandora/object/' . $parent_object->id ),
         ));
-
       }
       return $block;
     }
-
   }
-
+  return NULL;
 }
 
 /**

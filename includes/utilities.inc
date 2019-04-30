@@ -458,7 +458,7 @@ function islandora_ethnography_get_related_pids($identifier, $title, $type) {
 }
 
 /**
- * Adds entity autocomplete paths to a scholar citation form.
+ * Adds entity autocomplete paths to an ethnography citation form.
  *
  * @param array $form
  *   Drupal Form API array.

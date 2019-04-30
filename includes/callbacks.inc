@@ -52,7 +52,7 @@ function islandora_ethnography_deliver_datastream(FedoraObject $object, $dsid) {
  * Returns array of items to autocomplete forms.
  *
  * @param string $type
- *   Selects eithe Scholar or Department
+ *   The short name of the content type.
  *
  * @return array
  *   array of all candidates
@@ -73,7 +73,7 @@ function islandora_ethnography_autocomplete($type) {
       'title' => 'fgs_label_mt',
     ),
     'tune' => array(
-      'cmodel' => 'islandora:BDHTuneCModel',
+      'cmodel' => ISLANDORA_ETHNOGRAPHY_TUNE_CONTENT_MODEL,
       'title' => 'fgs_label_mt',
     ),
     'story' => array(
