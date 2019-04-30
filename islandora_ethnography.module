@@ -371,8 +371,11 @@ function islandora_ethnography_block_view($delta = '') {
   $block = array();
   switch ($delta) {
     case 'notation_is_expression_of':
-      $block['subject'] = NULL;
-      $block['content'] = islandora_ethnography_notation_block();
+      $content = islandora_ethnography_notation_block();
+      if ($content) {
+        $block['subject'] = NULL;
+        $block['content'] = $content;
+      }
       break;
   }
   return $block;
